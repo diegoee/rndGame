@@ -37,17 +37,18 @@ define([
 
       self.resize();
       $(window).on('resize',self.resize);
+      $('.menoBtn').off('click');
       $('.menoBtn').on('click',function(){
         self.sound[parseInt($(this).attr('data'))].play();
       });
 
       Snackbar.show({
         text: 'The MemoGame!',
-        duration: 10000,
+        duration: 0,
         actionText: 'Start game',
-        onActionClick: function() {
-         self.startGame();
-       }
+        onActionClick: function(){
+          self.startGame();
+        }
       });
 
     },
@@ -56,6 +57,11 @@ define([
       var self = this;
 
       var $squares = $('.menoBtn');
+      $squares.removeClass('active');
+      $squares.off('click');
+      $squares.on('click',function(){
+        self.sound[parseInt($(this).attr('data'))].play();
+      });
 
       var pGame = new Promise(function(resolve) {
         console.log('Promise created');
@@ -80,9 +86,7 @@ define([
 
           var ii = 0;
           var p1 = new Promise(function(resolve){
-            //console.log('repro secuence');
             function repro(){
-              //console.log('repro - n='+ii+' - element='+sec[ii]);
               $squares.off('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd');
               $($squares[sec[ii]]).addClass('active');
               self.sound[sec[ii]].play();
@@ -105,35 +109,18 @@ define([
           });
 
           p1.then(function(){
-            //console.log('check secuence');
             var checkSec = 0;
             $squares.addClass('pointer');
             $squares.on('click',function(){
-              //console.log('check - click='+$(this).attr('data')+' - sec='+sec[checkSec]);
               self.sound[parseInt($(this).attr('data'))].play();
               if (parseInt($(this).attr('data'))===sec[checkSec]){
                 checkSec++;
                 if(checkSec<sec.length){
-                  Snackbar.show({
-                    text: 'Good! Carry on..('+checkSec+'/'+sec.length+')',
-                    showAction: false,
-                    duration: 500
-                  });
                 }else{
-                  Snackbar.show({
-                    text: 'Good! complete('+checkSec+'/'+sec.length+')',
-                    showAction: false,
-                    duration: 500
-                  });
                   self.score++;
                   gameGoOn();
                 }
               }else{
-                Snackbar.show({
-                  text: 'Fail! (it was '+(sec[checkSec]+1)+' and you click '+(parseInt($(this).attr('data'))+1)+')',
-                  showAction: false,
-                  duration: 500
-                });
                 resolve();
                 return;
               }
@@ -146,10 +133,16 @@ define([
 
       pGame.then(function(){
         console.log('Promise then');
+        $squares.off('click');
+        $squares.addClass('active');
         Snackbar.show({
-          text: 'Game Over!',
-          showAction: false,
-          duration: 2500
+          pos: 'bottom-left',
+          text: 'Game Over - Score: '+self.score+' Round(s)',
+          duration: 0,
+          onActionClick: function(){
+            self.startGame();
+          },
+          actionText: 'Again!',
         });
       });
 

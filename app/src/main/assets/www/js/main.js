@@ -52,7 +52,6 @@ requirejs([
           "play": "play"
       },
       init: function(){
-        //memoGame.init();
         menu.init(Backbone);
       },
       help: function() {
@@ -67,6 +66,5 @@ requirejs([
     new AppRouter();
     Backbone.history.start();
     Backbone.history.navigate('init', {trigger:true});
-
 
 });

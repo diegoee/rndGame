@@ -1,11 +1,13 @@
 /*globals define, window*/
 define([
   'jquery',
-  'text!template/menu.html'
+  'text!template/menu.html',
+  'snackbar'
   ],
   function(
     $,
-    template
+    template,
+    Snackbar
   ){
   'use strict';
   var menu = {
@@ -35,6 +37,11 @@ define([
       });
       $('#btnPlay').on('click',function(){
         Backbone.history.navigate('play', {trigger:true});
+      });
+
+      Snackbar.show({
+        text: 'App',
+        duration: 1
       });
     }
   };
