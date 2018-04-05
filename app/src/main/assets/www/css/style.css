@@ -1,0 +1,39 @@
+@charset "UTF-8";
+.center,.c1  {
+  position: relative;
+}
+
+.center p, .c1 .c2{
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.c1 .c2 {
+  margin: 0 auto;
+  width: 90%;
+}
+
+.menoBtn{
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.menoBtn:hover{
+  opacity: 0.75;
+}
+
+.menoBtn:active{
+  background-color: transparent !important;
+}
+
+.menoBtn.active{
+  background-color: transparent !important;
+}
+
+#header{
+  padding-top: 1.5em;
+}
