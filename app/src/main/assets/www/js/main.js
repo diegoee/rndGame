@@ -1,4 +1,4 @@
-/*globals requirejs, window */
+/*globals requirejs, window,android */
 requirejs.config({
   baseUrl: 'js',
   paths: {
@@ -44,6 +44,10 @@ requirejs([
     Snackbar
   ){
     'use strict';
+    var data = {
+      sound: true,
+      orientation: true
+    };
 
     var AppRouter = Backbone.Router.extend({
       routes: {
@@ -59,7 +63,6 @@ requirejs([
         var border = ['border-primary','border-secondary','border-success','border-danger','border-warning','border-info','border-light','border-dark'];
         var btnColor = ['btn-primary','btn-secondary','btn-success','btn-danger','btn-warning','btn-info','btn-light'];
 
-
         $('#container').html(template);
         resize();
         $(window).on('resize',resize);
@@ -68,7 +71,7 @@ requirejs([
         rnd = rnd-1;
         $('#border').addClass(border[rnd]);
 
-        $.each(['#btnHelp','#btnPlay'],function(i,e){
+        $.each(['#btnHelp','#btnPlay','#btnSound','#btnOrentation'],function(i,e){
           rnd = Math.floor(Math.random() * (btnColor.length - 1)) + 1;
           rnd = rnd-1;
           $(e).addClass(btnColor[rnd]);
@@ -79,6 +82,56 @@ requirejs([
         });
         $('#btnPlay').on('click',function(){
           Backbone.history.navigate('play', {trigger:true});
+        });
+
+        function soundIcon(s){
+          if(!s){
+            $('#btnSound i').removeClass('fa-volume-up');
+            $('#btnSound i').addClass('fa-volume-down');
+          }else{
+            $('#btnSound i').removeClass('fa-volume-down');
+            $('#btnSound i').addClass('fa-volume-up');
+          }
+        }
+        function orienIcon(s){
+          if(!s){
+            $('#btnOrentation i').css({transform: 'rotate(90deg)'});
+          }else{
+            $('#btnOrentation i').css({transform: 'rotate(0deg)'});
+          }
+        }
+
+        function saveGetData(){
+          try{
+            android.setData(JSON.stringify(data));
+            data = JSON.parse(android.getData());
+          }catch(e){
+            console.error(e);
+          }
+        }
+
+        try{
+          data = JSON.parse(android.getData());
+        }catch(e){
+          console.error(e);
+        }
+        soundIcon(data.sound);
+        orienIcon(data.orientation);
+
+        $('#btnSound').on('click',function (){
+          data.sound=!data.sound;
+          saveGetData();
+          soundIcon(data.sound);
+          Snackbar.show({
+            text: 'Sound: '+(data.sound?'On':'Off'),
+            showAction: false,
+            duration: 2500
+          });
+        });
+        $('#btnOrentation').on('click',function(){
+          data.orientation=!data.orientation;
+          saveGetData();
+          orienIcon(data.orientation);
         });
 
         Snackbar.show({
