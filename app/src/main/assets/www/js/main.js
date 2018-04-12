@@ -33,6 +33,7 @@ requirejs([
   'backbone',
   'text!template/main.html',
   'memoGame',
+  'squareOut',
   'snackbar',
   'bootstrap'
   ],
@@ -41,6 +42,7 @@ requirejs([
     Backbone,
     template,
     memoGame,
+    squareOut,
     Snackbar
   ){
     'use strict';
@@ -48,6 +50,11 @@ requirejs([
       sound: true,
       orientation: true
     };
+
+    function rndN(max,min){
+      var rnd = Math.floor(Math.random() * max) + min;
+      return rnd;
+    }
 
     var AppRouter = Backbone.Router.extend({
       routes: {
@@ -67,13 +74,11 @@ requirejs([
         resize();
         $(window).on('resize',resize);
 
-        var rnd = Math.floor(Math.random() * (border.length - 1)) + 1;
-        rnd = rnd-1;
+        var rnd = rndN(border.length,1)-1;
         $('#border').addClass(border[rnd]);
 
         $.each(['#btnHelp','#btnPlay','#btnSound','#btnOrentation'],function(i,e){
-          rnd = Math.floor(Math.random() * (btnColor.length - 1)) + 1;
-          rnd = rnd-1;
+          rnd = rndN(btnColor.length,1)-1;
           $(e).addClass(btnColor[rnd]);
         });
 
@@ -146,14 +151,12 @@ requirejs([
 
         var labels = ['badge-primary','badge-secondary','badge-success','badge-danger','badge-warning','badge-info','badge-light','badge-dark'];
         var words = ['Play','Random','in the toilet','whats next!!','living la vida loca','Enjoy','Share','Live'];
-        var n = Math.floor(Math.random() * (75 - 1)) + 1;
+        var n = rndN(75,1);
         var r1,r2;
 
         for (var i=0; i<n;i++){
-          r1 = Math.floor(Math.random() * (labels.length - 1)) + 1;
-          r1 = r1-1;
-          r2 = Math.floor(Math.random() * (words.length - 1)) + 1;
-          r2 = r2-1;
+          r1 = rndN(labels.length,1)-1;
+          r2 = rndN(words.length,1)-1;
           $('#rndWords').append('<span class="badge '+labels[r1]+'">'+words[r2]+'</span>');
         }
 
@@ -163,7 +166,12 @@ requirejs([
         });
       },
       play: function() {
-        memoGame.init();
+        var games=[
+          memoGame,
+          squareOut
+        ];
+        var n = ((new Date()).getHours())%games.length;
+        games[n].init(data.sound);
       }
     });
 

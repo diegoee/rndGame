@@ -3,7 +3,6 @@ package com.diegoee.rndgame;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -59,14 +58,6 @@ public class MainActivity extends AppCompatActivity{
     public void checkData(){
         try{
             JSONObject obj = new JSONObject(data);
-            AudioManager mAudioManager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
-            if(obj.getBoolean("sound")){
-                int unmute_volume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, unmute_volume, 0);
-            }else{
-                int mute_volume = 0;
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mute_volume, 0);
-            }
             if(obj.getBoolean("orientation")){
                 this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             }else{

@@ -1,36 +1,49 @@
-/*globals window, define, Promise,Howl, noteC, noteB, noteE, noteG, setTimeout*/
+/*globals window, define, Promise,Howl, setTimeout*/
 define([
   'jquery',
   'text!template/memoGame.html',
   'snackbar',
-  'howler',
-  'notes'
+  'sounds',
+  'howler'
   ],
   function(
     $,
     template,
-    Snackbar
+    Snackbar,
+    sounds
   ){
   'use strict';
   var memoGame = {
-    sound: [
+    sound: [],
+    soundOn: [
       new Howl({
-        src: [noteC]
+        src: [sounds.noteC]
       }),
       new Howl({
-        src: [noteE]
+        src: [sounds.noteE]
       }),
       new Howl({
-        src: [noteG]
+        src: [sounds.noteG]
       }),
       new Howl({
-        src: [noteB]
+        src: [sounds.noteB]
       })
+    ],
+    soundOff: [
+      {play: function(){}},
+      {play: function(){}},
+      {play: function(){}},
+      {play: function(){}}
     ],
     resize: function (){
       $('#body').innerHeight($(window).innerHeight());
     },
-    init: function(){
+    init: function(soundOnff){
+      if(soundOnff){
+        this.sound=this.soundOn;
+      }else{
+        this.sound=this.soundOff;
+      }
 
       $('#container').html(template);
       var self= this;

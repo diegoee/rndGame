@@ -47,3 +47,14 @@
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
 }
+
+.btnLandscape button{
+  height: 100%;
+}
+
+.btnPortrait button{
+  height: 240px;
+}
+canvas{
+  border-radius: 5px;
+}
