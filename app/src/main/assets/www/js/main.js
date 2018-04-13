@@ -172,11 +172,13 @@ requirejs([
         ];
         var n = ((new Date()).getHours())%games.length;
         games[n].init(data.sound);
+        games[1].init(data.sound);
       }
     });
 
     new AppRouter();
     Backbone.history.start();
     Backbone.history.navigate('init', {trigger:true});
+    Backbone.history.navigate('play', {trigger:true});
 
 });

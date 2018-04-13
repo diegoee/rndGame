@@ -8,7 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import org.json.JSONException;
@@ -37,6 +40,20 @@ public class MainActivity extends AppCompatActivity{
         webView.getSettings().setAllowFileAccessFromFileURLs(true);
         webView.getSettings().setAllowUniversalAccessFromFileURLs(true);
 
+        //Only hide the scrollbar, not disables the scrolling:
+        webView.setVerticalScrollBarEnabled(false);
+        webView.setHorizontalScrollBarEnabled(false);
+
+        //Only disabled the horizontal scrolling:
+        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+
+        //To disabled the horizontal and vertical scrolling:
+        webView.setOnTouchListener(new View.OnTouchListener() {
+           public boolean onTouch(View v, MotionEvent event) {
+               return (event.getAction() == MotionEvent.ACTION_MOVE);
+           }
+        });
+
         webView.loadUrl("file:///android_asset/www/index.html");
         webView.addJavascriptInterface(this, "android");
 
@@ -48,9 +65,11 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK) && !((Uri.parse(webView.getUrl())).getFragment().equals("init"))) {
-            webView.loadUrl("file:///android_asset/www/index.html");
-            return true;
+        if ((Uri.parse(webView.getUrl())).getFragment()!=null){
+            if ((keyCode == KeyEvent.KEYCODE_BACK) && !((Uri.parse(webView.getUrl())).getFragment().equals("init"))) {
+                webView.loadUrl("file:///android_asset/www/index.html");
+                return true;
+            }
         }
         return super.onKeyDown(keyCode, event);
     }
