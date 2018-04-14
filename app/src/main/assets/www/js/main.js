@@ -155,7 +155,7 @@ requirejs([
 
         var labels = ['badge-primary','badge-secondary','badge-success','badge-danger','badge-warning','badge-info','badge-light','badge-dark'];
         var words = ['Play','Random','in the toilet','whats next!!','living la vida loca','Enjoy','Share','Live'];
-        var n = rndN(75,1);
+        var n = rndN(35,1);
         var r1,r2;
 
         for (var i=0; i<n;i++){
