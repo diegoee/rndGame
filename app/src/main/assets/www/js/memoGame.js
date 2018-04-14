@@ -39,10 +39,9 @@ define([
       $('#body').innerHeight($(window).innerHeight());
     },
     init: function(soundOnff){
+      this.sound=this.soundOff;
       if(soundOnff){
         this.sound=this.soundOn;
-      }else{
-        this.sound=this.soundOff;
       }
 
       $('#container').html(template);
@@ -109,7 +108,7 @@ define([
                 if (ii<sec.length){
                   setTimeout(function(){
                     repro();
-                  },250);
+                  },200);
                 }else{
                   resolve();
                 }

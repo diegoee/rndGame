@@ -176,7 +176,7 @@ requirejs([
         ];
         var n = ((new Date()).getHours())%games.length;
         games[n].init(data.sound);
-        //games[1].init(data.sound);
+        //games[0].init(data.sound);
       }
     });
 
