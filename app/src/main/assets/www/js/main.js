@@ -8,6 +8,7 @@ requirejs.config({
     snackbar: '../node_modules/node-snackbar/dist/snackbar.min',
     backbone: '../node_modules/backbone/backbone-min',
     howler: '../node_modules/howler/dist/howler.min',
+    paper: '../node_modules/paper/dist/paper-full.min',
     text: '../node_modules/text/text',
     template: '../templates'
   },
@@ -24,6 +25,9 @@ requirejs.config({
     },
     snackbar: {
       deps: ['jquery','bootstrap']
+    },
+    paper : {
+      exports: 'paper'
     }
   }
 });
@@ -147,7 +151,7 @@ requirejs([
       },
       help: function() {
         this.init();
-        $('#modalHelp').modal('dispose');
+        $('#modal').modal('dispose');
 
         var labels = ['badge-primary','badge-secondary','badge-success','badge-danger','badge-warning','badge-info','badge-light','badge-dark'];
         var words = ['Play','Random','in the toilet','whats next!!','living la vida loca','Enjoy','Share','Live'];
@@ -160,8 +164,8 @@ requirejs([
           $('#rndWords').append('<span class="badge '+labels[r1]+'">'+words[r2]+'</span>');
         }
 
-        $('#modalHelp').modal();
-        $('#modalHelp').on('hidden.bs.modal',function () {
+        $('#modal').modal();
+        $('#modal').on('hidden.bs.modal',function () {
           Backbone.history.navigate('init', {trigger:true});
         });
       },
@@ -172,13 +176,13 @@ requirejs([
         ];
         var n = ((new Date()).getHours())%games.length;
         games[n].init(data.sound);
-        games[1].init(data.sound);
+        //games[1].init(data.sound);
       }
     });
 
     new AppRouter();
     Backbone.history.start();
     Backbone.history.navigate('init', {trigger:true});
-    Backbone.history.navigate('play', {trigger:true});
+    //Backbone.history.navigate('play', {trigger:true});
 
 });

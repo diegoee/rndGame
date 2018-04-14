@@ -58,3 +58,8 @@
 canvas{
   border-radius: 5px;
 }
+
+.canvasContainer{
+  width: 100%;
+  height: 100%;
+}
