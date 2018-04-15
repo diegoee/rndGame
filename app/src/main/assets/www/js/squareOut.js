@@ -127,7 +127,7 @@ define([
         }));
       }
       createCircle();
-      this.interCircle = setInterval(createCircle,1000);
+      this.interCircle = setInterval(createCircle,250);
 
       var moveLeft=false;
       var moveRight=false;
