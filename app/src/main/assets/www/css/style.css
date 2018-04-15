@@ -63,3 +63,14 @@ canvas{
   width: 100%;
   height: 100%;
 }
+
+.zoomOutIn{
+  font-size: 750px;
+  transition: 0.5s;
+}
+
+.zoomIn{
+  font-size: 40px;
+}
+
+

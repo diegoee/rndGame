@@ -63,7 +63,7 @@ requirejs([
     var AppRouter = Backbone.Router.extend({
       routes: {
           "init": "init",
-          "help": "help",
+          "rnd": "rnd",
           "play": "play"
       },
       init: function(){
@@ -87,7 +87,7 @@ requirejs([
         });
 
         $('#btnHelp').on('click',function (){
-          Backbone.history.navigate('help', {trigger:true});
+          Backbone.history.navigate('rnd', {trigger:true});
         });
         $('#btnPlay').on('click',function(){
           Backbone.history.navigate('play', {trigger:true});
@@ -149,25 +149,27 @@ requirejs([
         });
 
       },
-      help: function() {
+      rnd: function() {
         this.init();
         $('#modal').modal('dispose');
 
-        var labels = ['badge-primary','badge-secondary','badge-success','badge-danger','badge-warning','badge-info','badge-light','badge-dark'];
-        var words = ['Play','Random','in the toilet','whats next!!','living la vida loca','Enjoy','Share','Live'];
-        var n = rndN(35,1);
-        var r1,r2;
+        var n = rndN(6,1);
+        $('#rndN').append('<p class="h1 zoomOutIn">'+n+'</p>');
+        $('#rndN').outerHeight($(window).outerHeight()-250);
 
-        for (var i=0; i<n;i++){
-          r1 = rndN(labels.length,1)-1;
-          r2 = rndN(words.length,1)-1;
-          $('#rndWords').append('<span class="badge '+labels[r1]+'">'+words[r2]+'</span>');
-        }
+        $('#modal').on('shown.bs.modal',function () {
+          $('#rndN p').addClass('zoomIn');
+        });
 
-        $('#modal').modal();
+        $('#modal').on('hide..bs.modal',function () {
+          $('#rndN p').removeClass('zoomIn');
+        });
+
         $('#modal').on('hidden.bs.modal',function () {
           Backbone.history.navigate('init', {trigger:true});
         });
+        $('#modal').modal();
+
       },
       play: function() {
         var games=[
