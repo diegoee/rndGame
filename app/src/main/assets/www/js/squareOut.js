@@ -236,16 +236,15 @@ define([
           }
         }
 
-
         //Actions
         if(moveLeft){
           if(rect.position.x-rect.size[0]/2>0){
-            rect.position.x-=5;
+            rect.position.x-=2;
           }
         }
         if(moveRight){
           if(rect.position.x<view.size.width-rect.size[0]/2){
-            rect.position.x+=5;
+            rect.position.x+=2;
           }
         }
         if(moveShoot){
