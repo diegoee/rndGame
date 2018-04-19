@@ -17,7 +17,6 @@ import android.webkit.WebView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 public class MainActivity extends AppCompatActivity{
     public static final String TAG = "TAG_DIEGO";
     public static final String DATA = "DATA_WEB";
@@ -62,7 +61,6 @@ public class MainActivity extends AppCompatActivity{
         checkData();
     }
 
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((Uri.parse(webView.getUrl())).getFragment()!=null){
@@ -104,6 +102,5 @@ public class MainActivity extends AppCompatActivity{
         data = sharedPref.getString(DATA_JSON,"{sound: true,orientation: true}");
         return data;
     }
-
 
 }

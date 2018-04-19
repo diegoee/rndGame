@@ -85,10 +85,12 @@ define([
       });
     },
     score: 0,
+    nShoot: 3,
     startGame: function(){
-      /*globals Path,Point,view,project,PointText */
+      /*globals Path,Point,view,project,PointText,Group */
       var self = this;
-      self.score=0;
+      self.score = 0;
+      self.nShoot = 3;
       self.$canvas.css({
         backgroundColor: 'white'
       });
@@ -103,9 +105,20 @@ define([
         fillColor: 'black'
       });
 
+      var circle = new Group();
+      var shoots = new Group();
+
       var scoreView = new PointText({
         point: [15, 20],
         content: 'Score: '+this.score,
+        fillColor: 'black',
+        fontFamily: 'Courier New',
+        fontSize: 15
+      });
+
+      var shootsView = new PointText({
+        point: [15, 40],
+        content: 'shoots: '+this.nShoot,
         fillColor: 'black',
         fontFamily: 'Courier New',
         fontSize: 15
@@ -116,59 +129,113 @@ define([
         return rnd;
       }
 
-      var circle=[];
       function createCircle(){
-        circle.push(new Path.Circle({
+        circle.addChild(new Path.Circle({
           center: new Point(rndN(Math.floor((view.size.width-10)),(10)/2), 5),
           radius: rndN(8,4),
-          fillColor: 'balck',
+          fillColor: 'black',
           strokeColor: 'red',
           strokeWidth: 2
         }));
       }
-      createCircle();
+
       this.interCircle = setInterval(createCircle,250);
+
+      function createShoot(x){
+        if (self.nShoot>0){
+          shoots.addChild(new Path.Circle({
+            center: new Point(x, (view.size.height-55)-5),
+            radius: 4,
+            fillColor: 'grey'
+          }));
+          self.nShoot--;
+        }
+      }
 
       var moveLeft=false;
       var moveRight=false;
+      var moveShoot=false;
 
       var counter=0;
+      var intersections = 0;
+      var i=0;
+      var j=0;
+      var auxInter=[];
       view.onFrame = function(){
         counter++;
+        intersections = 0;
+        auxInter=[];
 
         //Animations
         if (counter%10===0){
-          $.each(circle,function(){
-            (this.strokeWidth===0)?this.strokeWidth=2:this.strokeWidth=0;
-          });
+          (circle.strokeWidth===0)?circle.strokeWidth=2:circle.strokeWidth=0;
+        }
+        shootsView.content='shoots: '+self.nShoot;
+        if (counter%500===0){
+          if(self.nShoot<4){
+            self.nShoot++;
+          }
         }
 
-        //Check intersections
-        var intersections = 0;
-        $.each(circle,function(){
-          var aux = rect.getIntersections(this);
-          intersections +=aux.length;
+         //Check intersections
+        $.each(circle.children,function(){
+          auxInter = rect.getIntersections(this);
+          intersections +=auxInter.length;
         });
 
         if (intersections>0){
-          gameOver();
+          //gameOver
+          rect.fillColor='red';
+          clearInterval(self.interCircle);
+          self.$canvas.css({
+            backgroundColor: 'black'
+          });
+          shoots.removeChildren();
+
+          view.onFrame = function(){};
+          circle.fillColor='red';
+          rect.fillColor='red';
+          self.gameOverSnackBar();
         }
 
         //Path move
-        var rCircle=[];
-        $.each(circle,function(i){
+        console.log(circle.children.length);
+        $.each(circle.children,function(){
           this.position.y+=this.bounds.width/10;
+        });
+
+        $.each(shoots.children,function(){
+          this.position.y-=4;
+        });
+
+        $.each(circle.children,function(){
           if(this.position.y>view.size.height){
-            rCircle.push(i);
             self.score++;
             scoreView.content='Score: '+self.score;
           }
         });
 
-        for (var i=rCircle.length-1; i >=0; i--){
-          circle[rCircle[i]].remove();
-          circle.splice(rCircle[i],1);
+        //Remove items
+        for (i=circle.children.length-1; i >=0; i--){
+          if(circle.children[i].position.y>view.size.height){
+            circle.children[i].remove();
+          }
         }
+
+        for (i=circle.children.length-1; i >=0; i--){
+          for (j=shoots.children.length-1; j >=0; j--){
+            auxInter = circle.children[i].getIntersections(shoots.children[j]);
+            if(auxInter.length>0){
+              shoots.children[j].remove();
+              circle.children[i].remove();
+              break;
+            }
+          }
+          if(auxInter.length>0){
+            break;
+          }
+        }
+
 
         //Actions
         if(moveLeft){
@@ -181,25 +248,24 @@ define([
             rect.position.x+=5;
           }
         }
+        if(moveShoot){
+          moveShoot=false;
+          createShoot(rect.position.x);
+        }
+
       };
 
-      function gameOver(){
-        rect.fillColor='red';
-        clearInterval(self.interCircle);
-        self.$canvas.css({
-          backgroundColor: 'black'
-        });
-        view.onFrame = function(){};
-        $.each(circle,function(){
-          this.fillColor='red';
-        });
-        self.gameOverSnackBar();
-      }
-
-      // Draw the view now:
-      //view.draw();
-
       //Action;
+      $('canvas').on('mousedown touchstart', function() {
+         moveShoot=true;
+      }).on('mouseup mouseleave touchsend', function() {
+         moveShoot=false;
+      });
+      $('.btnCenter').on('mousedown touchstart', function() {
+         moveShoot=true;
+      }).on('mouseup mouseleave touchsend', function() {
+         moveShoot=false;
+      });
       $('.btnLeft').on('mousedown touchstart', function() {
          moveLeft=true;
       }).on('mouseup mouseleave touchsend', function() {
