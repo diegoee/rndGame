@@ -66,7 +66,7 @@ canvas{
 
 .zoomOutIn{
   font-size: 750px;
-  transition: 0.5s;
+  transition: 1s;
 }
 
 .zoomIn{
