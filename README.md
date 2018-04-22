@@ -4,7 +4,5 @@
 ## Run the app:
 * in folder: `/`.
 * `npm install`
-
 ## Authors
-
 Diego E.
