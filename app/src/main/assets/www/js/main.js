@@ -73,7 +73,7 @@ requirejs([
           $('#body').innerHeight($(window).innerHeight());
         }
 
-        var border = ['border-primary','border-secondary','border-success','border-danger','border-warning','border-info','border-light','border-dark'];
+        var border = ['border-primary','border-secondary','border-success','border-danger','border-warning','border-info','border-light'];
         var btnColor = ['btn-primary','btn-secondary','btn-success','btn-danger','btn-warning','btn-info','btn-light'];
 
         $('#container').html(template);
