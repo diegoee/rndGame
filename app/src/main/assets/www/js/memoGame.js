@@ -48,6 +48,7 @@ define([
       var self= this;
 
       self.resize();
+      $(window).off('resize');
       $(window).on('resize',self.resize);
       $('.menoBtn').off('click');
       $('.menoBtn').on('click',function(){

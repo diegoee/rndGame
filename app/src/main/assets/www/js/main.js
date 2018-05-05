@@ -1,4 +1,4 @@
-/*globals requirejs, window,android */
+/*globals requirejs, window,android,setTimeout */
 requirejs.config({
   baseUrl: 'js',
   paths: {
@@ -38,6 +38,7 @@ requirejs([
   'text!template/main.html',
   'memoGame',
   'squareOut',
+  'whereIstheBall',
   'snackbar',
   'bootstrap'
   ],
@@ -47,6 +48,7 @@ requirejs([
     template,
     memoGame,
     squareOut,
+    whereIstheBall,
     Snackbar
   ){
     'use strict';
@@ -158,11 +160,9 @@ requirejs([
         $('#rndN').outerHeight($(window).outerHeight()-250);
 
         $('#modal').on('shown.bs.modal',function () {
-          $('#rndN p').addClass('zoomIn');
-        });
-
-        $('#modal').on('hide..bs.modal',function () {
-          $('#rndN p').removeClass('zoomIn');
+          setTimeout(function(){
+            $('#rndN p').addClass('zoomIn');
+          },200);
         });
 
         $('#modal').on('hidden.bs.modal',function () {
@@ -173,12 +173,13 @@ requirejs([
       },
       play: function() {
         var games=[
+          whereIstheBall,
           memoGame,
           squareOut
         ];
         var n = ((new Date()).getHours())%games.length;
         games[n].init(data.sound);
-        //games[1].init(data.sound);
+        //games[0].init(data.sound);
       }
     });
 

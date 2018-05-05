@@ -53,6 +53,7 @@ define([
 
       $('#container').html(template);
       this.resize();
+      $(window).off('resize');
       $(window).on('resize',function(){
         self.resize();
         self.startGame();
