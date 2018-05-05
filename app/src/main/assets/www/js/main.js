@@ -38,7 +38,7 @@ requirejs([
   'text!template/main.html',
   'memoGame',
   'squareOut',
-  'whereIstheBall',
+  'whereIsTheBall',
   'snackbar',
   'bootstrap'
   ],
@@ -48,7 +48,7 @@ requirejs([
     template,
     memoGame,
     squareOut,
-    whereIstheBall,
+    whereIsTheBall,
     Snackbar
   ){
     'use strict';
@@ -173,7 +173,7 @@ requirejs([
       },
       play: function() {
         var games=[
-          whereIstheBall,
+          whereIsTheBall,
           memoGame,
           squareOut
         ];

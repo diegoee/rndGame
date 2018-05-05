@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity{
 
     @JavascriptInterface
     public void setData(String data){
-        SharedPreferences sharedPref =  getApplicationContext().getSharedPreferences(DATA,Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(DATA,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(DATA_JSON, data);
         editor.commit();
