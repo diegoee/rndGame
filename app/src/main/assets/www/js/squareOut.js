@@ -18,6 +18,27 @@ define([
   var squareOut = {
     $canvas: $('<canvas id="canvas"></canvas>'),
     interCircle: undefined,
+    sound: [],
+    soundOn: [
+      new Howl({
+        src: [sounds.noteC]
+      }),
+      new Howl({
+        src: [sounds.noteE]
+      }),
+      new Howl({
+        src: [sounds.noteG]
+      }),
+      new Howl({
+        src: [sounds.noteB]
+      })
+    ],
+    soundOff: [
+      {play: function(){}},
+      {play: function(){}},
+      {play: function(){}},
+      {play: function(){}}
+    ],
     resize: function (){
       var w,h;
       var c=[];
@@ -45,10 +66,9 @@ define([
     },
     init: function(soundOnff){
       var self = this;
+      this.sound=this.soundOff;
       if(soundOnff){
-
-      }else{
-
+        this.sound=this.soundOn;
       }
 
       $('#container').html(template);
@@ -144,6 +164,7 @@ define([
 
       function createShoot(x){
         if (self.nShoot>0){
+          self.sound[3].play();
           shoots.addChild(new Path.Circle({
             center: new Point(x, (view.size.height-55)-5),
             radius: 4,
@@ -186,6 +207,8 @@ define([
 
         if (intersections>0){
           //gameOver
+          self.sound[0].play();
+
           rect.fillColor='red';
           clearInterval(self.interCircle);
           self.$canvas.css({
@@ -227,6 +250,7 @@ define([
           for (j=shoots.children.length-1; j >=0; j--){
             auxInter = circle.children[i].getIntersections(shoots.children[j]);
             if(auxInter.length>0){
+              self.sound[2].play();
               shoots.children[j].remove();
               circle.children[i].remove();
               break;

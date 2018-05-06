@@ -13,7 +13,7 @@ define([
     paper
   ){
   'use strict';
-  var whereIstheBall = {
+  var whereIsTheBall = {
     $canvas: $('<canvas id="canvas"></canvas>'),
     score: 0,
     sound: [],
@@ -209,6 +209,6 @@ define([
     }
   };
 
-  return whereIstheBall;
+  return whereIsTheBall;
 });
 
