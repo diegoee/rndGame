@@ -36,9 +36,10 @@ requirejs([
   'jquery',
   'backbone',
   'text!template/main.html',
-  'memoGame',
-  'squareOut',
-  'whereIsTheBall',
+  'game1',
+  'game2',
+  'game3',
+  'game4',
   'snackbar',
   'bootstrap'
   ],
@@ -46,9 +47,10 @@ requirejs([
     $,
     Backbone,
     template,
-    memoGame,
-    squareOut,
-    whereIsTheBall,
+    game1,
+    game2,
+    game3,
+    game4,
     Snackbar
   ){
     'use strict';
@@ -173,17 +175,19 @@ requirejs([
       },
       play: function() {
         var games=[
-          whereIsTheBall,
-          memoGame,
-          squareOut
+          game1,
+          game2,
+          game3,
+          game4
         ];
-        var n = ((new Date()).getHours())%games.length;
-        games[n].init(data.sound);
+        //var n = ((new Date()).getHours()+(new Date()).getDate())%games.length;
+        games[3].init(data.sound);
       }
     });
 
     new AppRouter();
     Backbone.history.start();
-    Backbone.history.navigate('init', {trigger:true});
+    //Backbone.history.navigate('init', {trigger:true});
+    Backbone.history.navigate('play', {trigger:true});
 
 });

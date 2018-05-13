@@ -1,7 +1,7 @@
 /*globals window,document, define, Howl, setTimeout, clearInterval, setInterval*/
 define([
   'jquery',
-  'text!template/squareOut.html',
+  'text!template/game2.html',
   'snackbar',
   'sounds',
   'paper',
@@ -80,7 +80,7 @@ define([
       });
 
       Snackbar.show({
-        text: 'Square Out!',
+        text: 'Game 2',
         duration: 0,
         actionText: 'Start game',
         onActionClick: function(){

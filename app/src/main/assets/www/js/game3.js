@@ -108,7 +108,7 @@ define([
       });
 
       Snackbar.show({
-        text: 'Where is the ball!',
+        text: 'Game 3',
         duration: 0,
         actionText: 'Start game',
         onActionClick: function(){

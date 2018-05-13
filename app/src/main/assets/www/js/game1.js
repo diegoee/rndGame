@@ -1,7 +1,7 @@
 /*globals window, define, Promise,Howl, setTimeout*/
 define([
   'jquery',
-  'text!template/memoGame.html',
+  'text!template/game1.html',
   'snackbar',
   'sounds',
   'howler'
@@ -56,7 +56,7 @@ define([
       });
 
       Snackbar.show({
-        text: 'The MemoGame!',
+        text: 'Game 1',
         duration: 0,
         actionText: 'Start game',
         onActionClick: function(){
