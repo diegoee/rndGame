@@ -127,9 +127,7 @@ define([
         for (var jj =0;jj<n;jj++){
           control.addChild(new Path.Rectangle({
             point: [(j)*(view.size.width)/(n), (jj)*(view.size.height)/(n)],
-            size: [(view.size.width)/(n), (view.size.height)/(n)],
-            //fillColor: 'black',
-            strokeColor: 0xF0F0F0
+            size: [(view.size.width)/(n), (view.size.height)/(n)]
           }));
         }
       }
@@ -166,7 +164,7 @@ define([
 
       var lrud=[];
       lrud[0]=lrud[1]=lrud[2]=lrud[3]=false;
-      lrud[0]=false;
+      lrud[0]= false;
 
       view.on('mousedown', function(e) {
         var n = 0;
@@ -203,52 +201,70 @@ define([
         }
       });
 
-      var snake=[];
-      var gameover= false;
-      snake[0]=self.rndN(grid.children.length-1,0);
+      var snakePath=[];
+      var gameover = false;
+      var snakeHead = lr+lr-20; //self.rndN(grid.children.length-1,0);
+      snakePath[0]=snakeHead;
+      var lSnake = 1;
+      var pick = self.rndN(grid.children.length-1,0);
+      pick = snakeHead+3;
       view.onFrame = function(e){
         if(e.count%20===0){
+          console.log(snakePath);
 
-
-          var item =grid.children[snake[0]];
-          if ((item.point[0]===0)||(item.point[1]===0)){
-            gameover=true;
+          if(snakePath[snakePath.length-1]!==snakeHead){
+            snakePath.push(snakeHead);
           }
-          if ((item.point[0]+item.size[0]>=view.size.width)||(item.point[1]+item.size[1]>=view.size.height)){
-            gameover=true;
-          }
-
-          //console.log((item.point[0]+item.size[0])+','+(item.point[1]+item.size[1])+' <-> '+[view.size.width,view.size.height]);
-
-          grid.fillColor='white';
-          grid.strokeColor= '#F0F0F0';
-          for(var i=0;i<snake.length;i++){
-            grid.children[snake[i]].fillColor='black';
+          if(snakePath.length>=grid.children.length){
+            snakePath.shift();
           }
 
           if(gameover){
             self.gameOver();
             view.onFrame = function(){};
+          }
+
+          if(pick===snakeHead){
+            self.score++;
+            scoreView.content='Score: '+self.score;
+            //pick = self.rndN(grid.children.length-1,0);
+            pick = snakeHead+3;
+            lSnake++;
+          }
+
+          grid.fillColor='white';
+          grid.children[pick].fillColor='red';
+          grid.children[snakeHead].fillColor='black';
+          for(var i=snakePath.length-1;i>snakePath.length-1-lSnake;i--){
+            grid.children[snakePath[i]].fillColor='black';
+          }
+          var item = grid.children[snakeHead];
+
+          var condition = ((item.point[0]===0)&&lrud[0])||
+              ((item.point[0]+item.size[0]>=view.size.width)&&lrud[1])||
+              ((item.point[1]===0)&&lrud[2])||
+              ((item.point[1]+item.size[1]>=view.size.height)&&lrud[3]);
+
+          if (condition){
+            gameover=true;
           }else{
 
-          }
+            if(lrud[0]){
+              snakeHead=snakeHead-lr;
+            }
 
-          if(lrud[0]){
-            snake[0]=snake[0]-lr;
-          }
+            if(lrud[1]){
+              snakeHead=snakeHead+lr;
+            }
 
-          if(lrud[1]){
-            snake[0]=snake[0]+lr;
-          }
+            if(lrud[2]){
+              snakeHead=snakeHead-1;
+            }
 
-          if(lrud[2]){
-            snake[0]=snake[0]-1;
+            if(lrud[3]){
+              snakeHead=snakeHead+1;
+            }
           }
-
-          if(lrud[3]){
-            snake[0]=snake[0]+1;
-          }
-
         }
       };
     }
