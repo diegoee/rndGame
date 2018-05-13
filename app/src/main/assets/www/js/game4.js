@@ -1,4 +1,4 @@
-/*globals window,document, define, Howl, setTimeout, clearInterval, setInterval*/
+/*globals window,document, define, Howl, setTimeout, clearInterval, setInterval, Path,Point,view,project,PointText,Group */
 define([
   'jquery',
   'snackbar',
@@ -13,7 +13,7 @@ define([
     paper
   ){
   'use strict';
-  var whereIsTheBall = {
+  var game4 = {
     $canvas: $('<canvas id="canvas"></canvas>'),
     score: 0,
     sound: [],
@@ -85,23 +85,10 @@ define([
         }
       });
     },
-    startGame: function(){
-      /*globals Path,Point,view,project,PointText,Group */
-      console.log(' ** start **');
-
-      var self = this;
-      self.score = 0;
-
-      view.onFrame = function(){};
-      project.activeLayer.removeChildren();
-      view.draw();
-
-      //clearInterval(this.interCircle);
-
+    grid: function(){
       var grid = new Group();
       var n = 1;
       var nn = 30;
-
       //console.log('Getting square');
       var exit = false;
       var counter = 0;
@@ -120,7 +107,6 @@ define([
       }
       //console.log(n+' X '+nn);
       //console.log((view.size.width)/(n+1)+' X '+(view.size.height)/(nn+1));
-
       for (var i =0;i<=n;i++){
         for (var ii =0;ii<=nn;ii++){
           grid.addChild(new Path.Rectangle({
@@ -131,16 +117,12 @@ define([
         }
       }
 
-      var scoreView = new PointText({
-        point: [15, 20],
-        content: 'Score: '+this.score,
-        fillColor: 'black',
-        fontFamily: 'Courier New',
-        fontSize: 15
-      });
+      return [nn+1,grid];
 
+    },
+    control: function(){
       var control = new Group();
-      n = 3;
+      var n = 3;
       for (var j =0;j<n;j++){
         for (var jj =0;jj<n;jj++){
           control.addChild(new Path.Rectangle({
@@ -151,10 +133,40 @@ define([
           }));
         }
       }
+      return control;
+
+    },
+    startGame: function(){
+      console.log(' ** start **');
+
+      var self = this;
+      self.score = 0;
+
+      view.onFrame = function(){};
+      project.activeLayer.removeChildren();
+      view.draw();
+
+      //clearInterval(this.interCircle);
+
+      var aux;
+      aux = self.grid();
+      var lr = aux[0];
+      var grid = aux[1];
+      aux = undefined;
+
+      var scoreView = new PointText({
+        point: [15, 20],
+        content: 'Score: '+this.score,
+        fillColor: 'black',
+        fontFamily: 'Courier New',
+        fontSize: 15
+      });
+
+      var control = self.control();
 
       var lrud=[];
       lrud[0]=lrud[1]=lrud[2]=lrud[3]=false;
-      lrud[0]=true;
+      lrud[0]=false;
 
       view.on('mousedown', function(e) {
         var n = 0;
@@ -197,20 +209,6 @@ define([
       view.onFrame = function(e){
         if(e.count%20===0){
 
-          if(lrud[0]){
-
-          }
-
-          if(lrud[1]){
-          }
-
-          if(lrud[2]){
-            snake[0]=snake[0]-1;
-          }
-
-          if(lrud[3]){
-            snake[0]=snake[0]+1;
-          }
 
           var item =grid.children[snake[0]];
           if ((item.point[0]===0)||(item.point[1]===0)){
@@ -234,11 +232,28 @@ define([
           }else{
 
           }
+
+          if(lrud[0]){
+            snake[0]=snake[0]-lr;
+          }
+
+          if(lrud[1]){
+            snake[0]=snake[0]+lr;
+          }
+
+          if(lrud[2]){
+            snake[0]=snake[0]-1;
+          }
+
+          if(lrud[3]){
+            snake[0]=snake[0]+1;
+          }
+
         }
       };
     }
   };
 
-  return whereIsTheBall;
+  return game4;
 });
 

@@ -13,7 +13,7 @@ define([
     sounds
   ){
   'use strict';
-  var memoGame = {
+  var game1 = {
     sound: [],
     soundOn: [
       new Howl({
@@ -162,6 +162,6 @@ define([
     }
   };
 
-  return memoGame;
+  return game1;
 });
 

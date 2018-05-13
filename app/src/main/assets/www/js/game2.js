@@ -15,7 +15,7 @@ define([
     paper
   ){
   'use strict';
-  var squareOut = {
+  var game2 = {
     $canvas: $('<canvas id="canvas"></canvas>'),
     interCircle: undefined,
     sound: [],
@@ -303,6 +303,6 @@ define([
     }
   };
 
-  return squareOut;
+  return game2;
 });
 
