@@ -1,9 +1,10 @@
-/*globals window,document, define, Howl, setTimeout, clearInterval, setInterval, Path,Point,view,project,PointText,Group */
+/*globals window, document, define, Howl, Path, view, project, PointText, Group, Hammer*/
 define([
   'jquery',
   'snackbar',
   'sounds',
   'paper',
+  'hammer',
   'howler'
   ],
   function(
@@ -78,35 +79,18 @@ define([
       Snackbar.show({
         text: 'Game Over! - Score: '+self.score,
         duration: 0,
-        actionText: 'play again!',
-        onActionClick: function(){
-          self.init();
-          $('.snackbar-container').fadeOut(250);
-        }
+        showAction: false
       });
     },
     grid: function(){
       var grid = new Group();
-      var n = 1;
-      var nn = 30;
-      //console.log('Getting square');
-      var exit = false;
-      var counter = 0;
-      while(!exit){
-        if(Math.floor((view.size.width)/(n+1))!==Math.floor((view.size.height)/(nn+1))){
-          n=n+1;
-        }else{
-          //console.log('Exit by condition');
-          exit = true;
-        }
-        counter++;
-        if (counter>100){
-          //console.log('Exit by counter');
-          exit = true;
-        }
+      var n = 10;
+      var nn = 20;
+      if(view.size.width>view.size.height){
+        n=20;
+        nn=10;
       }
-      //console.log(n+' X '+nn);
-      //console.log((view.size.width)/(n+1)+' X '+(view.size.height)/(nn+1));
+
       for (var i =0;i<=n;i++){
         for (var ii =0;ii<=nn;ii++){
           grid.addChild(new Path.Rectangle({
@@ -120,22 +104,28 @@ define([
       return [nn+1,grid];
 
     },
-    control: function(){
-      var control = new Group();
-      var n = 3;
-      for (var j =0;j<n;j++){
-        for (var jj =0;jj<n;jj++){
-          control.addChild(new Path.Rectangle({
-            point: [(j)*(view.size.width)/(n), (jj)*(view.size.height)/(n)],
-            size: [(view.size.width)/(n), (view.size.height)/(n)]
-          }));
-        }
+    getPick: function(l,snakePath,lSnake){
+      var aux = [];
+      var snake = [];
+      var i;
+      for (i=0;i<l;i++){
+        aux.push(i);
       }
-      return control;
+      for(i=snakePath.length-1;i>snakePath.length-1-lSnake;i--){
+        snake.push(snakePath[i]);
+      }
+      for (i=0;i<snake.length;i++){
+        aux = aux.filter(function(item) {
+          return item !== snake[i];
+        });
+      }
+      i = this.rndN(aux.length-1,0);
+      var pick = aux[i];
+      return pick;
 
     },
     startGame: function(){
-      console.log(' ** start **');
+      //console.log(' ** start **');
 
       var self = this;
       self.score = 0;
@@ -160,44 +150,66 @@ define([
         fontSize: 15
       });
 
-      var control = self.control();
-
       var lrud=[];
       lrud[0]=lrud[1]=lrud[2]=lrud[3]=false;
       lrud[0]= false;
 
-      view.on('mousedown', function(e) {
-        var n = 0;
+      var mc = new Hammer(document.getElementById('canvas'));
+      mc.get('swipe').set({
+        direction: Hammer.DIRECTION_ALL,
+        threshold:  5,
+        velocity:  0.1
+      });
+      mc.on('swipeleft swiperight swipeup swipedown', function(ev) {
+        console.log(ev.type);
         var nn = 0;
         var exe = false;
-        if (control.children[1].contains(e.point)) {
+        //self.sound[1].play();
+        if ((ev.type==='swipeleft')&&!lrud[1]) {
           exe = true;
-          n=1;
           nn=0;
         }
-        if (control.children[3].contains(e.point)) {
+        if ((ev.type==='swipeup')&&!lrud[3]) {
           exe = true;
-          n=3;
           nn=2;
         }
-        if (control.children[5].contains(e.point)) {
+        if ((ev.type==='swipedown')&&!lrud[2]) {
           exe = true;
-          n=5;
           nn=3;
         }
-        if (control.children[7].contains(e.point)) {
+        if ((ev.type==='swiperight')&&!lrud[0]) {
           exe = true;
-          n=7;
           nn=1;
         }
         if (exe){
           lrud[0]=lrud[1]=lrud[2]=lrud[3]=false;
           lrud[nn]=true;
-          control.children[n].fillColor='grey';
-          setTimeout(function(){
-            control.children[n].fillColor=null;
-          },250);
-          //console.log(lrud);
+        }
+      });
+
+      $(document).on('keydown', function(e) {
+        var nn = 0;
+        var exe = false;
+        //self.sound[1].play();
+        if ((e.keyCode===37)&&!lrud[1]) {
+          exe = true;
+          nn=0;
+        }
+        if ((e.keyCode===38)&&!lrud[3]) {
+          exe = true;
+          nn=2;
+        }
+        if ((e.keyCode===40)&&!lrud[2]) {
+          exe = true;
+          nn=3;
+        }
+        if ((e.keyCode===39)&&!lrud[0]) {
+          exe = true;
+          nn=1;
+        }
+        if (exe){
+          lrud[0]=lrud[1]=lrud[2]=lrud[3]=false;
+          lrud[nn]=true;
         }
       });
 
@@ -206,11 +218,11 @@ define([
       var snakeHead = lr+lr-20; //self.rndN(grid.children.length-1,0);
       snakePath[0]=snakeHead;
       var lSnake = 1;
-      var pick = self.rndN(grid.children.length-1,0);
-      pick = snakeHead+3;
+      var pick = self.getPick(grid.children.length,snakePath);
+      pick = self.getPick(grid.children.length,snakePath,lSnake);
       view.onFrame = function(e){
-        if(e.count%20===0){
-          console.log(snakePath);
+        if(e.count%10===0){
+          //console.log(snakePath);
 
           if(snakePath[snakePath.length-1]!==snakeHead){
             snakePath.push(snakeHead);
@@ -220,15 +232,17 @@ define([
           }
 
           if(gameover){
+            self.sound[0].play();
             self.gameOver();
             view.onFrame = function(){};
           }
 
           if(pick===snakeHead){
+            self.sound[3].play();
             self.score++;
             scoreView.content='Score: '+self.score;
             //pick = self.rndN(grid.children.length-1,0);
-            pick = snakeHead+3;
+            pick = self.getPick(grid.children.length,snakePath,lSnake);
             lSnake++;
           }
 
@@ -244,6 +258,14 @@ define([
               ((item.point[0]+item.size[0]>=view.size.width)&&lrud[1])||
               ((item.point[1]===0)&&lrud[2])||
               ((item.point[1]+item.size[1]>=view.size.height)&&lrud[3]);
+
+          //console.log(' - ');
+          for(i=snakePath.length-2;i>snakePath.length-1-lSnake;i--){
+            //console.log(snakePath[i]+' - '+snakeHead);
+            condition=condition||(snakePath[i]===snakeHead);
+
+          }
+
 
           if (condition){
             gameover=true;

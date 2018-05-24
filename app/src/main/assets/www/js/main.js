@@ -8,6 +8,7 @@ requirejs.config({
     snackbar: '../node_modules/node-snackbar/dist/snackbar.min',
     backbone: '../node_modules/backbone/backbone-min',
     howler: '../node_modules/howler/dist/howler.min',
+    hammer: '../node_modules/hammerjs/hammer',
     paper: '../node_modules/paper/dist/paper-full.min',
     text: '../node_modules/text/text',
     template: '../templates'
@@ -40,6 +41,7 @@ requirejs([
   'game2',
   'game3',
   'game4',
+  'game5',
   'snackbar',
   'bootstrap'
   ],
@@ -51,6 +53,7 @@ requirejs([
     game2,
     game3,
     game4,
+    game5,
     Snackbar
   ){
     'use strict';
@@ -67,7 +70,7 @@ requirejs([
     var AppRouter = Backbone.Router.extend({
       routes: {
           "init": "init",
-          "rnd": "rnd",
+          "rnd":  "rnd",
           "play": "play"
       },
       init: function(){
@@ -80,6 +83,7 @@ requirejs([
 
         $('#container').html(template);
         resize();
+        $(window).off('resize');
         $(window).on('resize',resize);
 
         var rnd = rndN(border.length,1)-1;
@@ -178,16 +182,16 @@ requirejs([
           game1,
           game2,
           game3,
-          game4
+          game4,
+          game5
         ];
-        //var n = ((new Date()).getHours()+(new Date()).getDate())%games.length;
-        games[3].init(data.sound);
+        var n = ((new Date()).getHours()+(new Date()).getDate())%games.length;
+        games[4].init(data.sound);
       }
     });
 
     new AppRouter();
     Backbone.history.start();
-    //Backbone.history.navigate('init', {trigger:true});
-    Backbone.history.navigate('play', {trigger:true});
+    Backbone.history.navigate('init', {trigger:true});
 
 });

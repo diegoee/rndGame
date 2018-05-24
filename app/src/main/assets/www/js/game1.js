@@ -1,19 +1,21 @@
-/*globals window, define, Promise,Howl, setTimeout*/
+/*globals window, define, Promise,Howl, setTimeout, Path, Group, view, project*/
 define([
   'jquery',
-  'text!template/game1.html',
   'snackbar',
   'sounds',
+  'paper',
   'howler'
   ],
   function(
     $,
-    template,
     Snackbar,
-    sounds
+    sounds,
+    paper
   ){
   'use strict';
   var game1 = {
+    $canvas: $('<canvas id="canvas"></canvas>'),
+    score: 0,
     sound: [],
     soundOn: [
       new Howl({
@@ -36,48 +38,110 @@ define([
       {play: function(){}}
     ],
     resize: function (){
-      $('#body').innerHeight($(window).innerHeight());
-    },
-    init: function(soundOnff){
-      this.sound=this.soundOff;
-      if(soundOnff){
-        this.sound=this.soundOn;
-      }
-
-      $('#container').html(template);
-      var self= this;
-
-      self.resize();
-      $(window).off('resize');
-      $(window).on('resize',self.resize);
-      $('.menoBtn').off('click');
-      $('.menoBtn').on('click',function(){
-        self.sound[parseInt($(this).attr('data'))].play();
+      var self = this;
+      var h = $(window).outerHeight()-20;
+      var w = $(window).outerWidth()-20;
+      this.$canvas.css({
+        backgroundColor: '#343a40',
+        height: h,
+        width: w,
+        margin: '10px'
       });
+
+      paper.setup(this.$canvas.attr('id'));
+      var grid = self.createGrid();
 
       Snackbar.show({
         text: 'Game 1',
         duration: 0,
         actionText: 'Start game',
         onActionClick: function(){
-          self.startGame();
+          self.startGame(grid);
+          $('.snackbar-container').fadeOut(250);
         }
       });
 
     },
-    score: 0,
-    startGame: function(){
+    init: function(soundOnff){
       var self = this;
+      $('#container').html(this.$canvas);
 
-      var $squares = $('.menoBtn');
-      $squares.removeClass('active');
-      $squares.off('click');
-      $squares.on('click',function(){
-        self.sound[parseInt($(this).attr('data'))].play();
+      this.sound=this.soundOff;
+      if(soundOnff){
+        this.sound=this.soundOn;
+      }
+      paper.install(window);
+
+      this.resize();
+      $(window).off('resize');
+      $(window).on('resize',function(){
+        self.resize();
       });
 
+    },
+    rndN: function rndN(max,min){
+      var rnd = Math.floor(Math.random() * max) + min;
+      return rnd;
+    },
+    createGrid: function(){
+      //self.sound[parseInt($(this).attr('data'))].play();
+
+      var self = this;
+      self.score = 0;
+
+      view.onFrame = function(){};
+      project.activeLayer.removeChildren();
+      view.draw();
+
+      var grid = new Group();
+      var color=new Array(2);
+      color[0]=['#FF0000','#00FF00'];
+      color[1]=['#0000FF','#FFFF00'];
+      for (var i =0;i<2;i++){
+        for (var ii =0;ii<2;ii++){
+          grid.addChild(new Path.Rectangle({
+              point: [(i)*(view.size.width)/2+4, (ii)*(view.size.height)/2+4],
+              size: [(view.size.width)/2-8, (view.size.height)/2-8],
+              fillColor: (color[i])[ii]
+          }));
+        }
+      }
+
+      var active = [false,false,false,false];
+      var iTime = 10;
+      var activeTime = [iTime,iTime,iTime,iTime];
+      view.onMouseDown = function() {};
+      view.onMouseDown = function(e) {
+        for (var i = 0; i<grid.children.length; i++){
+          if (grid.children[i].contains(e.point)) {
+            self.sound[i].play();
+            active[i]=true;
+            activeTime[i]=iTime;
+          }
+        }
+      };
+
+      view.onFrame = function onFrame() {
+        for (var i = 0; i<grid.children.length; i++){
+          if (active[i]) {
+            if (activeTime[i]>=0){
+              grid.children[i].opacity = 0.5;
+              activeTime[i]--;
+            }else{
+              grid.children[i].opacity = 1;
+              activeTime[i]=iTime;
+              active[i]=false;
+            }
+          }
+        }
+      };
+
+      return grid;
+    },
+    startGame: function(grid){
+      var self = this;
+
       var pGame = new Promise(function(resolve) {
-        console.log('Promise created');
         var sec = [];
         var rndN = 0;
         var round = 0;
@@ -86,7 +150,7 @@ define([
         ///---START---
         function gameGoOn(){
           round++;
-          rndN = Math.floor((Math.random()*$squares.length));
+          rndN = Math.floor((Math.random()*grid.children.length));
           sec.push(rndN);
 
           Snackbar.show({
@@ -95,68 +159,105 @@ define([
             duration: 2500
           });
 
-          $squares.off('click');
+          var iTime = 10;
+          var slot = 40;
+          var aux = iTime+slot;
+          var next = 0;
 
-          var ii = 0;
-          var p1 = new Promise(function(resolve){
-            function repro(){
-              $squares.off('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd');
-              $($squares[sec[ii]]).addClass('active');
-              self.sound[sec[ii]].play();
-              $($squares[sec[ii]]).on('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd', function() {
-                $($squares[sec[ii]]).removeClass('active');
-                ii++;
-                if (ii<sec.length){
-                  setTimeout(function(){
-                    repro();
-                  },200);
-                }else{
-                  resolve();
-                }
-              });
+          view.onMouseDown = function() {};
+          view.onFrame = function onFrame() {
+            if (aux===iTime+slot){
+              self.sound[sec[next]].play();
             }
-            setTimeout(function(){
-              repro();
-            },1000);
 
-          });
+            if (aux>=slot){
+              grid.children[sec[next]].opacity = 0.5;
+            }else{
+              grid.children[sec[next]].opacity = 1;
+            }
 
-          p1.then(function(){
-            var checkSec = 0;
-            $squares.addClass('pointer');
-            $squares.on('click',function(){
-              self.sound[parseInt($(this).attr('data'))].play();
-              if (parseInt($(this).attr('data'))===sec[checkSec]){
-                checkSec++;
-                if(checkSec<sec.length){
-                }else{
-                  self.score++;
-                  gameGoOn();
+            if (aux>=0){
+               aux--;
+            }else{
+              next++;
+              aux = iTime+slot;
+            }
+
+            if (next>=sec.length){
+              view.onFrame = function() {};
+              checkTouch();
+            }
+
+          };
+
+
+          function checkTouch() {
+            var next = 0;
+            var active = [false,false,false,false];
+            var iTime = 10;
+            var activeTime = [iTime,iTime,iTime,iTime];
+            view.onMouseDown = function() {};
+            view.onMouseDown = function(e) {
+              for (var i = 0; i<grid.children.length; i++){
+                if (grid.children[i].contains(e.point)) {
+                  grid.children[i].opacity = 1;
+                  self.sound[i].play();
+                  active[i]=true;
+                  activeTime[i]=iTime;
+                  //console.log(sec[next]+' '+i);
+                  if(sec[next]===i){
+                    next++;
+                  }else{
+                    resolve();
+                  }
                 }
-              }else{
-                resolve();
-                return;
               }
-            });
-          });
-        }
-        gameGoOn();
+              if(next>=sec.length){
+                view.onMouseDown = function() {};
+                setTimeout(function(){
+                  gameGoOn();
+                },1000);
+                self.score++;
+              }
+            };
 
+            view.onFrame = function() {};
+            view.onFrame = function onFrame() {
+              for (var i = 0; i<grid.children.length; i++){
+                if (active[i]) {
+                  if (activeTime[i]>=0){
+                    grid.children[i].opacity = 0.5;
+                    activeTime[i]--;
+                  }else{
+                    grid.children[i].opacity = 1;
+                    activeTime[i]=iTime;
+                    active[i]=false;
+                  }
+                }
+              }
+            };
+          }
+         }
+        setTimeout(function(){
+          gameGoOn();
+        },500);
       });
 
       pGame.then(function(){
-        console.log('Promise then');
-        $squares.off('click');
-        $squares.addClass('active');
+        view.onMouseDown = function() {};
+        view.onFrame = function() {};
+        for (var i = 0; i<grid.children.length; i++){
+          grid.children[i].opacity = 0.75;
+        }
         Snackbar.show({
-          pos: 'bottom-left',
-          text: 'Game Over - Score: '+self.score+' Round(s)',
-          duration: 0,
-          onActionClick: function(){
-            self.startGame();
-          },
-          actionText: 'Again!',
-        });
+        text: 'Game Over. Final Score: '+self.score,
+        duration: 0,
+        actionText: 'play Again!',
+        onActionClick: function(){
+          self.resize();
+        }
+      });
+
       });
 
     }

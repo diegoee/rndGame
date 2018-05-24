@@ -1,4 +1,4 @@
-/*globals window,document, define, Howl, setTimeout, clearInterval, setInterval*/
+/*globals window,define, Howl*/
 define([
   'jquery',
   'snackbar',

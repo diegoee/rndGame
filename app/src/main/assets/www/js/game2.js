@@ -1,4 +1,4 @@
-/*globals window,document, define, Howl, setTimeout, clearInterval, setInterval*/
+/*globals window, define, Howl, clearInterval, setInterval*/
 define([
   'jquery',
   'text!template/game2.html',
@@ -190,7 +190,11 @@ define([
 
         //Animations
         if (counter%10===0){
-          (circle.strokeWidth===0)?circle.strokeWidth=2:circle.strokeWidth=0;
+          if(circle.strokeWidth===0){
+            circle.strokeWidth=2;
+          }else{
+            circle.strokeWidth=0;
+          }
         }
         shootsView.content='shoots: '+self.nShoot;
         if (counter%500===0){
