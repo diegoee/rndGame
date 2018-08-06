@@ -38,7 +38,7 @@ define([
       {play: function(){}},
       {play: function(){}}
     ],
-    resize: function (){
+    resize: function (gameOverFunction){
       var self = this;
       var h = $(window).outerHeight()-20;
       var w = $(window).outerWidth()-20;
@@ -50,10 +50,10 @@ define([
       });
 
       paper.setup(this.$canvas.attr('id'));
-      self.startGame();
+      self.startGame(gameOverFunction);
 
     },
-    init: function(soundOnff){
+    init: function(soundOnff,gameOverFunction){
       //console.log(' ** init **');
       var self = this;
       $('#container').html(this.$canvas);
@@ -63,10 +63,10 @@ define([
       }
       paper.install(window);
 
-      this.resize();
+      this.resize(gameOverFunction);
       $(window).off('resize');
       $(window).on('resize',function(){
-        self.resize();
+        self.resize(gameOverFunction);
       });
 
     },
@@ -74,13 +74,20 @@ define([
       var rnd = Math.floor(Math.random() * max) + min;
       return rnd;
     },
-    gameOver: function(){
+    gameOver: function(gameOverFunction){
       var self = this;
       Snackbar.show({
         text: 'Game Over! - Score: '+self.score,
         duration: 0,
-        showAction: false
+        actionText: 'Back to Menu!',
+        onActionClick: function(){
+          //self.startGame();
+          //$('.snackbar-container').fadeOut(250);
+          gameOverFunction();
+        }
       });
+
+
     },
     grid: function(){
       var grid = new Group();
@@ -124,7 +131,7 @@ define([
       return pick;
 
     },
-    startGame: function(){
+    startGame: function(gameOverFunction){
       //console.log(' ** start **');
 
       var self = this;
@@ -233,7 +240,7 @@ define([
 
           if(gameover){
             self.sound[0].play();
-            self.gameOver();
+            self.gameOver(gameOverFunction);
             view.onFrame = function(){};
           }
 

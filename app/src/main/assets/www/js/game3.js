@@ -29,7 +29,7 @@ define([
       {play: function(){}},
       {play: function(){}}
     ],
-    resize: function (){
+    resize: function (gameOverFunction){
       var self = this;
       var h = $(window).outerHeight()-20;
       var w = $(window).outerWidth()-20;
@@ -41,10 +41,10 @@ define([
       });
 
       paper.setup(this.$canvas.attr('id'));
-      self.startGame();
+      self.startGame(gameOverFunction);
 
     },
-    init: function(soundOnff){
+    init: function(soundOnff,gameOverFunction){
       //console.log(' ** init **');
       var self = this;
       $('#container').html(this.$canvas);
@@ -54,14 +54,14 @@ define([
       }
       paper.install(window);
 
-      this.resize();
+      this.resize(gameOverFunction);
       $(window).off('resize');
       $(window).on('resize',function(){
-        self.resize();
+        self.resize(gameOverFunction);
       });
 
     },
-    startGame: function(){
+    startGame: function(gameOverFunction){
       /*globals Path,Point,view,project,PointText,Group */
       //console.log(' ** start **');
 
@@ -188,10 +188,11 @@ define([
                   Snackbar.show({
                     text: 'Game Over! - Score: '+self.score,
                     duration: 0,
-                    actionText: 'Start Again',
+                    actionText: 'Back to Menu!',
                     onActionClick: function(){
                       $('.snackbar-container').fadeOut(250,function(){
-                        self.startGame();
+                        //self.startGame();
+                        gameOverFunction();
                       });
                     }
                   });

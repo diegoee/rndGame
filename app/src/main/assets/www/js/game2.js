@@ -64,7 +64,7 @@ define([
         width: w,
       });
     },
-    init: function(soundOnff){
+    init: function(soundOnff,gameOverFunction){
       var self = this;
       this.sound=this.soundOff;
       if(soundOnff){
@@ -85,7 +85,7 @@ define([
         actionText: 'Start game',
         onActionClick: function(){
           $('.snackbar-container').fadeOut(250,function(){
-            self.startGame();
+            self.startGame(gameOverFunction);
           });
         }
       });
@@ -93,21 +93,22 @@ define([
       paper.setup(this.$canvas.attr('id'));
 
     },
-    gameOverSnackBar: function(){
+    gameOverSnackBar: function(gameOverFunction){
       var self = this;
       Snackbar.show({
         text: 'Game Over! - Score: '+self.score,
         duration: 0,
-        actionText: 'play again!',
+        actionText: 'Back to Menu!',
         onActionClick: function(){
-          self.startGame();
-          $('.snackbar-container').fadeOut(250);
+          //self.startGame();
+          //$('.snackbar-container').fadeOut(250);
+          gameOverFunction();
         }
       });
     },
     score: 0,
     nShoot: 3,
-    startGame: function(){
+    startGame: function(gameOverFunction){
       /*globals Path,Point,view,project,PointText,Group */
       var self = this;
       self.score = 0;
@@ -223,7 +224,7 @@ define([
           view.onFrame = function(){};
           circle.fillColor='red';
           rect.fillColor='red';
-          self.gameOverSnackBar();
+          self.gameOverSnackBar(gameOverFunction);
         }
 
         //Path move

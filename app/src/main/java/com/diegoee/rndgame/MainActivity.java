@@ -18,7 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity{
-    public static final String TAG = "TAG_DIEGO";
+    public static final String TAG = "TAG_LOG";
     public static final String DATA = "DATA_WEB";
     public static final String DATA_JSON = "DATA_JSON";
 
@@ -31,6 +31,16 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
 
+        webView = createWebView();
+
+        webView = createWebView();
+        webView.loadUrl("file:///android_asset/www/index.html");
+
+        data = getData();
+        checkData();
+    }
+
+    public WebView createWebView(){
         webView = findViewById(R.id.web);
 
         webView.getSettings().setJavaScriptEnabled(true);
@@ -48,23 +58,19 @@ public class MainActivity extends AppCompatActivity{
 
         //To disabled the horizontal and vertical scrolling:
         webView.setOnTouchListener(new View.OnTouchListener() {
-           public boolean onTouch(View v, MotionEvent event) {
-               return (event.getAction() == MotionEvent.ACTION_MOVE);
-           }
+            public boolean onTouch(View v, MotionEvent event) {
+                return (event.getAction() == MotionEvent.ACTION_MOVE);
+            }
         });
-
-        webView.loadUrl("file:///android_asset/www/index.html");
         webView.addJavascriptInterface(this, "android");
-
-        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(DATA, Context.MODE_PRIVATE);
-        data = sharedPref.getString(DATA_JSON,"{sound: true,orientation: true}");
-        checkData();
+        return webView;
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((Uri.parse(webView.getUrl())).getFragment()!=null){
             if ((keyCode == KeyEvent.KEYCODE_BACK) && !((Uri.parse(webView.getUrl())).getFragment().equals("init"))) {
+                //Log.v(TAG,"onKeyDown init");
                 webView.loadUrl("file:///android_asset/www/index.html");
                 return true;
             }
@@ -94,6 +100,17 @@ public class MainActivity extends AppCompatActivity{
         editor.commit();
         this.data=data;
         checkData();
+    }
+
+    @JavascriptInterface
+    public void backPressed(){
+        Log.v(TAG,"backPressed");
+        webView.post(new Runnable() {
+            @Override
+            public void run() {
+                webView.loadUrl("file:///android_asset/www/index.html");
+            }
+        });
     }
 
     @JavascriptInterface

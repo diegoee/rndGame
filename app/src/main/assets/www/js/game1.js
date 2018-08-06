@@ -37,7 +37,7 @@ define([
       {play: function(){}},
       {play: function(){}}
     ],
-    resize: function (){
+    resize: function (gameOverFunction){
       var self = this;
       var h = $(window).outerHeight()-20;
       var w = $(window).outerWidth()-20;
@@ -56,13 +56,13 @@ define([
         duration: 0,
         actionText: 'Start game',
         onActionClick: function(){
-          self.startGame(grid);
+          self.startGame(grid,gameOverFunction);
           $('.snackbar-container').fadeOut(250);
         }
       });
 
     },
-    init: function(soundOnff){
+    init: function(soundOnff,gameOverFunction){
       var self = this;
       $('#container').html(this.$canvas);
 
@@ -72,10 +72,10 @@ define([
       }
       paper.install(window);
 
-      this.resize();
+      this.resize(gameOverFunction);
       $(window).off('resize');
       $(window).on('resize',function(){
-        self.resize();
+        self.resize(gameOverFunction);
       });
 
     },
@@ -138,7 +138,7 @@ define([
 
       return grid;
     },
-    startGame: function(grid){
+    startGame: function(grid,gameOverFunction){
       var self = this;
 
       var pGame = new Promise(function(resolve) {
@@ -189,7 +189,6 @@ define([
             }
 
           };
-
 
           function checkTouch() {
             var next = 0;
@@ -252,9 +251,10 @@ define([
         Snackbar.show({
         text: 'Game Over. Final Score: '+self.score,
         duration: 0,
-        actionText: 'play Again!',
+        actionText: 'Back to Menu!',
         onActionClick: function(){
-          self.resize();
+          //self.resize();
+          gameOverFunction();
         }
       });
 

@@ -1,4 +1,4 @@
-/*globals window, document, define, Howl, Path, view, project, PointText, Group, Hammer, location,Point */
+/*globals window, document, define, Howl, Path, view, project, PointText, Group, setTimeout */
 define([
   'jquery',
   'snackbar',
@@ -38,7 +38,7 @@ define([
       {play: function(){}},
       {play: function(){}}
     ],
-    resize: function (){
+    resize: function (gameOverFunction){
       var self = this;
       var h = $(window).outerHeight()-20;
       var w = $(window).outerWidth()-20;
@@ -50,10 +50,10 @@ define([
       });
 
       paper.setup(this.$canvas.attr('id'));
-      self.startGame();
+      self.startGame(gameOverFunction);
 
     },
-    init: function(soundOnff){
+    init: function(soundOnff,gameOverFunction ){
       var self = this;
       $('#container').html(this.$canvas);
       this.sound=this.soundOff;
@@ -61,30 +61,30 @@ define([
         this.sound=this.soundOn;
       }
       paper.install(window);
-      this.resize();
+      this.resize(gameOverFunction);
       $(window).off('resize');
       $(window).on('resize',function(){
-        self.resize();
+        self.resize(gameOverFunction);
       });
     },
     rndN: function rndN(max,min){
       var rnd = Math.floor(Math.random() * max) + min;
       return rnd;
     },
-    gameOver: function(){
+    gameOver: function(gameOverFunction){
       var self = this;
       self.sound[0].play();
       Snackbar.show({
         text: 'Game Over! - Score: '+self.score,
         duration: 0,
-        actionText: 'Start Again',
+        actionText: 'Back to Menu!',
         onActionClick: function(){
-          self.startGame();
+          //self.startGame();
+          gameOverFunction();
         }
       });
     },
-    startGame: function(){
-
+    startGame: function(gameOverFunction){
       var self = this;
       self.score = 0;
 
@@ -120,19 +120,10 @@ define([
 
       var jumpOn = [0,0];
       var counter = [0,0];
-      view.onMouseDown = function() {
-        self.sound[3].play();
-        if(jumpOn[0]>0){
-          jumpOn[1] = 1;
-          counter[1] = 0;
-        }
-        jumpOn[0] = 1;
-        counter[0] = 0;
 
-      };
 
       $(document).off('keydown');
-      $(document).on('keydown',function(e){
+      $(document).one('keydown',function(e){
         if(e.keyCode==32){
           go();
           $('.snackbar-container').fadeOut(250);
@@ -152,6 +143,16 @@ define([
       });
 
       function go(){
+
+        view.onMouseDown = function() {
+            self.sound[3].play();
+            if(jumpOn[0]>0){
+                jumpOn[1] = 1;
+                counter[1] = 0;
+            }
+            jumpOn[0] = 1;
+            counter[0] = 0;
+        };
 
         $(document).off('keydown');
         $(document).on('keydown',function(e){
@@ -210,11 +211,11 @@ define([
           $.each(walls.children,function(){
             intersections = ball.getIntersections(this);
             intersections = intersections.length;
-            console.log(this.bounds.width);
+            //console.log(this.bounds.width);
             if(intersections!==0){
               this.fillColor='red';
               view.onFrame = null;
-              self.gameOver();
+              self.gameOver(gameOverFunction);
             }
           });
 

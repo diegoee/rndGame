@@ -186,7 +186,16 @@ requirejs([
           game5
         ];
         var n = ((new Date()).getHours()+(new Date()).getDate())%games.length;
-        games[n].init(data.sound);
+        //n=4;
+        games[n].init(data.sound,function(){
+            try{
+                android.backPressed();
+            }catch(e){
+                console.error(e);
+                Backbone.history.navigate('init', {trigger:true});
+            }
+            //Backbone.history.navigate('play', {trigger:true});
+        });
       }
     });
 
