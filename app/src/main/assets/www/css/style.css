@@ -1,4 +1,5 @@
 @charset "UTF-8";
+ 
 .center,.c1  {
   position: relative;
 }
@@ -17,44 +18,22 @@
   width: 90%;
 }
 
-.menoBtn{
-  cursor: pointer;
-  transition: 0.25s;
+.centerE{
+  display: flex;
+  justify-content: center; /* align horizontal */
+  align-items: center; /* align vertical */
 }
-
-.menoBtn:hover{
-  opacity: 0.75;
-}
-
-.menoBtn:active{
-  background-color: transparent !important;
-}
-
-.menoBtn.active{
-  background-color: transparent !important;
-}
-
-#header{
-  padding-top: 1.5em;
-}
-
+ 
 .noselect {
-  -webkit-user-select: none; /* Safari */
-   -khtml-user-select: none; /* Konqueror HTML */
-     -moz-user-select: none; /* Firefox */
-      -ms-user-select: none; /* Internet Explorer/Edge */
-          user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+  -webkit-user-select: none;  
+   -khtml-user-select: none;  
+     -moz-user-select: none;  
+      -ms-user-select: none;  
+          user-select: none;  
   overflow-y: hidden;
   overflow-x: hidden;
 }
 
-.btnLandscape button{
-  height: 100%;
-}
-
-.btnPortrait button{
-  height: 240px;
-}
 canvas{
   border-radius: 5px;
 }
@@ -62,15 +41,4 @@ canvas{
 .canvasContainer{
   width: 100%;
   height: 100%;
-}
-
-.zoomOutIn{
-  font-size: 750px;
-  transition: 1s;
-}
-
-.zoomIn{
-  font-size: 40px;
-}
-
-
+} 

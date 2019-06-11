@@ -10,8 +10,6 @@ requirejs.config({
     howler: '../node_modules/howler/dist/howler.min',
     hammer: '../node_modules/hammerjs/hammer',
     paper: '../node_modules/paper/dist/paper-full.min',
-    text: '../node_modules/text/text',
-    template: '../templates'
   },
   shim: {
     bootstrap : {
@@ -36,42 +34,42 @@ requirejs.config({
 requirejs([
   'jquery',
   'backbone',
-  'text!template/main.html',
-  'game1',
-  'game2',
-  'game3',
-  'game4',
-  'game5',
+  'game',
   'snackbar',
   'bootstrap'
   ],
   function(
     $,
     Backbone,
-    template,
-    game1,
-    game2,
-    game3,
-    game4,
-    game5,
+    game,
     Snackbar
   ){
     'use strict';
     var data = {
       sound: true,
-      orientation: true
+      orientation: true, 
+      score: 0,
     };
 
     function rndN(max,min){
       var rnd = Math.floor(Math.random() * max) + min;
       return rnd;
-    }
+    } 
 
+    function saveGetData(){
+      try{
+        android.setData(JSON.stringify(data));
+        data = JSON.parse(android.getData());
+      }catch(e){
+        console.error(e);
+      }
+    }
+  
     var AppRouter = Backbone.Router.extend({
       routes: {
-          "init": "init",
-          "rnd":  "rnd",
-          "play": "play"
+          init: 'init',
+          score:  'score',
+          play: 'play'
       },
       init: function(){
         function resize(){
@@ -80,121 +78,129 @@ requirejs([
 
         var border = ['border-primary','border-secondary','border-success','border-danger','border-warning','border-info','border-light'];
         var btnColor = ['btn-primary','btn-secondary','btn-success','btn-danger','btn-warning','btn-info','btn-light'];
+ 
+        $.get('templates/main.html',function(template){  
+          $('#container').html(template); 
+          
+          resize();
+          $(window).off('resize');
+          $(window).on('resize',resize);
 
-        $('#container').html(template);
-        resize();
-        $(window).off('resize');
-        $(window).on('resize',resize);
+          var rnd = rndN(border.length,1)-1;
+          $('#border').addClass(border[rnd]);
+          $.each(
+            ['#btnHelp',
+             '#btnPlay',
+             '#btnSound',
+             '#btnOrentation'
+          ],function(i,e){
+            rnd = rndN(btnColor.length,1)-1;
+            $(e).addClass(btnColor[rnd]);
+          });
 
-        var rnd = rndN(border.length,1)-1;
-        $('#border').addClass(border[rnd]);
+          $('#btnHelp').on('click',function (){
+            Backbone.history.navigate('score', {trigger:true});
+          });
+          $('#btnPlay').on('click',function(){
+            Backbone.history.navigate('play', {trigger:true});
+          });
 
-        $.each(['#btnHelp','#btnPlay','#btnSound','#btnOrentation'],function(i,e){
-          rnd = rndN(btnColor.length,1)-1;
-          $(e).addClass(btnColor[rnd]);
-        });
-
-        $('#btnHelp').on('click',function (){
-          Backbone.history.navigate('rnd', {trigger:true});
-        });
-        $('#btnPlay').on('click',function(){
-          Backbone.history.navigate('play', {trigger:true});
-        });
-
-        function soundIcon(s){
-          if(!s){
-            $('#btnSound i').removeClass('fa-volume-up');
-            $('#btnSound i').addClass('fa-volume-down');
-          }else{
-            $('#btnSound i').removeClass('fa-volume-down');
-            $('#btnSound i').addClass('fa-volume-up');
+          function soundIcon(s){
+            if(!s){
+              $('#btnSound i').removeClass('fa-volume-up');
+              $('#btnSound i').addClass('fa-volume-down');
+            }else{
+              $('#btnSound i').removeClass('fa-volume-down');
+              $('#btnSound i').addClass('fa-volume-up');
+            }
           }
-        }
-        function orienIcon(s){
-          if(!s){
-            $('#btnOrentation i').css({transform: 'rotate(90deg)'});
-          }else{
-            $('#btnOrentation i').css({transform: 'rotate(0deg)'});
+          function orienIcon(s){
+            if(!s){
+              $('#btnOrentation i').css({transform: 'rotate(90deg)'});
+            }else{
+              $('#btnOrentation i').css({transform: 'rotate(0deg)'});
+            }
           }
-        }
 
-        function saveGetData(){
           try{
-            android.setData(JSON.stringify(data));
             data = JSON.parse(android.getData());
           }catch(e){
             console.error(e);
           }
-        }
+          soundIcon(data.sound);
+          orienIcon(data.orientation);
 
+          $('#btnSound').on('click',function (){
+            data.sound=!data.sound;
+            saveGetData();
+            soundIcon(data.sound);
+            Snackbar.show({
+              text: 'Sound: '+(data.sound?'On':'Off'),
+              showAction: false,
+              duration: 2500
+            });
+          });
+          $('#btnOrentation').on('click',function(){
+            data.orientation=!data.orientation;
+            saveGetData();
+            orienIcon(data.orientation);
+          });
+
+          Snackbar.show({
+            text: 'App',
+            duration: 1
+          });
+                    
+        }); 
+
+      },
+      score: function(){
         try{
           data = JSON.parse(android.getData());
         }catch(e){
           console.error(e);
         }
-        soundIcon(data.sound);
-        orienIcon(data.orientation);
-
-        $('#btnSound').on('click',function (){
-          data.sound=!data.sound;
-          saveGetData();
-          soundIcon(data.sound);
-          Snackbar.show({
-            text: 'Sound: '+(data.sound?'On':'Off'),
-            showAction: false,
-            duration: 2500
-          });
-        });
-        $('#btnOrentation').on('click',function(){
-          data.orientation=!data.orientation;
-          saveGetData();
-          orienIcon(data.orientation);
-        });
-
-        Snackbar.show({
-          text: 'App',
-          duration: 1
-        });
-
-      },
-      rnd: function() {
-        this.init();
-        $('#modal').modal('dispose');
-
-        var n = rndN(6,1);
-        $('#rndN').append('<p class="h1 zoomOutIn">'+n+'</p>');
-        $('#rndN').outerHeight($(window).outerHeight()-250);
-
-        $('#modal').on('shown.bs.modal',function () {
-          setTimeout(function(){
-            $('#rndN p').addClass('zoomIn');
-          },200);
-        });
+        $('#score').append(data.score); 
 
         $('#modal').on('hidden.bs.modal',function () {
           Backbone.history.navigate('init', {trigger:true});
         });
+        $('#shareBtn').on('click',function(){
+          try{
+            android.shareScore(data.score);
+          }catch(e){
+            console.error(e);
+          }
+        });
         $('#modal').modal();
-
       },
-      play: function() {
-        var games=[
-          game1,
-          game2,
-          game3,
-          game4,
-          game5
-        ];
-        var n = ((new Date()).getHours()+(new Date()).getDate())%games.length;
-        //n=4;
-        games[n].init(data.sound,function(){
+      play: function(){ 
+        var self = this;
+        game.init(data.sound,function(score){ 
+           
+          if (score>data.score){
+            data.score=score;
+            var rec = 'New record!!'; 
+            
             try{
-                android.backPressed();
+              saveGetData();
+              android.backPressed();
             }catch(e){
-                console.error(e);
-                Backbone.history.navigate('init', {trigger:true});
+              console.error(e);
+              //Backbone.history.navigate('init', {trigger:true});
             }
-            //Backbone.history.navigate('play', {trigger:true});
+            
+            Snackbar.show({
+              text: 'Score: '+score+' '+rec,
+              duration: 3000,
+              actionText: 'Close',
+              onClose: function(){
+                Backbone.history.navigate('init', {trigger:true});  
+              }
+            });
+          }else{
+            Backbone.history.navigate('init', {trigger:true});
+          }  
         });
       }
     });
@@ -202,5 +208,4 @@ requirejs([
     new AppRouter();
     Backbone.history.start();
     Backbone.history.navigate('init', {trigger:true});
-
 });
