@@ -124,7 +124,10 @@ requirejs([
 
           try{
             data = JSON.parse(android.getData());
-          }catch(e){
+          }catch(e){ 
+            data.score=0; 
+            data.sounddata=true;
+            data.orientation=true;
             console.error(e);
           }
           soundIcon(data.sound);

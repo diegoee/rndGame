@@ -200,6 +200,12 @@ define([
             circle.children[i].remove();
           }
         }
+        
+        for (i=shoots.children.length-1; i >=0; i--){
+          if(shoots.children[i].position.y<0){
+            shoots.children[i].remove();
+          }
+        }
 
         for (i=circle.children.length-1; i >=0; i--){
           for (j=shoots.children.length-1; j >=0; j--){

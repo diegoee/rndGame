@@ -176,11 +176,11 @@ public class MainActivity extends AppCompatActivity{
             i.putExtra(Intent.EXTRA_STREAM, imageUri);
             i.setType("image/jpeg");
             startActivity(Intent.createChooser( i, "Share Via"));
-            Toast.makeText(getApplicationContext(), "Sharing!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Sharing!", Toast.LENGTH_SHORT).show();
 
         } catch (Throwable e) {
             Log.v(TAG,e.getMessage());
-            Toast.makeText(getApplicationContext(), "Error, can not share :(", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Error, u can not share :(", Toast.LENGTH_SHORT).show();
             // Several error may come out with file handling or DOM
             e.printStackTrace();
         }
