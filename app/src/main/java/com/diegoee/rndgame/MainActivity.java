@@ -1,6 +1,7 @@
 package com.diegoee.rndgame;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,7 +20,9 @@ import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ShareActionProvider;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -36,6 +39,7 @@ public class MainActivity extends AppCompatActivity{
 
     private WebView webView;
     private String data;
+    private int score;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,7 @@ public class MainActivity extends AppCompatActivity{
         webView = createWebView();
         webView.loadUrl("file:///android_asset/www/index.html");
 
+        score = 0;
         data = getData();
         checkData();
     }
@@ -119,11 +124,8 @@ public class MainActivity extends AppCompatActivity{
         checkData();
     }
 
-
-
     public static int CODE_PERM = 01;
     int permissionCheck;
-
 
     private void checkPermission(){
         permissionCheck = this.checkSelfPermission("Manifest.permission.WRITE_EXTERNAL_STORAGE");
@@ -149,41 +151,65 @@ public class MainActivity extends AppCompatActivity{
     }
 
     @JavascriptInterface
-    public void shareScore(int score){
+    public void shareScore(){
+        data = getData();
 
         try {
-
-            String mPath = Environment.getExternalStorageDirectory().toString() + "/"+getResources().getString(R.string.app_name)+".jpg";
-
-            // create bitmap screen capture
-            View v1 = getWindow().getDecorView().getRootView();
-            v1.setDrawingCacheEnabled(true);
-            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-            v1.setDrawingCacheEnabled(false);
-
-            File imageFile = new File(mPath);
-
-            FileOutputStream outputStream = new FileOutputStream(imageFile);
-            int quality = 100;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-            outputStream.flush();
-            outputStream.close();
-
-            Log.v(TAG,"shareScore "+score);
-            Intent i = new Intent( Intent.ACTION_SEND);
-            Uri imageUri = Uri.parse(mPath);
-            i.putExtra(Intent.EXTRA_TEXT, "My score on RnDGame: "+score+"\nhttps://play.google.com/store/apps/details?id=com.diegoee.rndgame1");
-            i.putExtra(Intent.EXTRA_STREAM, imageUri);
-            i.setType("image/jpeg");
-            startActivity(Intent.createChooser( i, "Share Via"));
-            //Toast.makeText(getApplicationContext(), "Sharing!", Toast.LENGTH_SHORT).show();
-
+            JSONObject obj = new JSONObject(data);
+            score = obj.getInt("score");
         } catch (Throwable e) {
             Log.v(TAG,e.getMessage());
-            Toast.makeText(getApplicationContext(), "Error, u can not share :(", Toast.LENGTH_SHORT).show();
-            // Several error may come out with file handling or DOM
+            Toast.makeText(getApplicationContext(), "Error: Score not read", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+        final View mView = getLayoutInflater().inflate(R.layout.score_dialog, null);
+        ((TextView) mView.findViewById(R.id.score_text)).setText(""+score+"");
+        mBuilder.setView(mView);
+
+        final AlertDialog dialog = mBuilder.create();
+        mView.findViewById(R.id.btnShare).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                try {
+                    String mPath = Environment.getExternalStorageDirectory().toString() + "/"+getResources().getString(R.string.app_name)+".jpg";
+
+                    // create bitmap screen capture
+                    //View v1 = getWindow().getDecorView().getRootView();
+                    mView.getRootView().setDrawingCacheEnabled(true);
+                    Bitmap bitmap = Bitmap.createBitmap(mView.getRootView().getDrawingCache());
+                    mView.getRootView().setDrawingCacheEnabled(false);
+
+                    File imageFile = new File(mPath);
+
+                    FileOutputStream outputStream = new FileOutputStream(imageFile);
+                    int quality = 100;
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+                    outputStream.flush();
+                    outputStream.close();
+
+                    Log.v(TAG,"shareScore "+score);
+                    Intent i = new Intent( Intent.ACTION_SEND);
+                    Uri imageUri = Uri.parse(mPath);
+                    i.putExtra(Intent.EXTRA_TEXT, "My score on RnDGame: "+score+"\n"+getString(R.string.url_playstore));
+                    i.putExtra(Intent.EXTRA_STREAM, imageUri);
+                    i.setType("image/jpeg");
+                    startActivity(Intent.createChooser( i, "Share Via"));
+                    //Toast.makeText(getApplicationContext(), "Sharing!", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+
+                } catch (Throwable e) {
+                    Log.v(TAG,e.getMessage());
+                    Toast.makeText(getApplicationContext(), "Error, u can not share :(", Toast.LENGTH_SHORT).show();
+                    // Several error may come out with file handling or DOM
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        dialog.show();
+
 
     }
 

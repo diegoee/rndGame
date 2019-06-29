@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">RnDGame</string>
+    <string name="url_playstore">https://play.google.com/store/apps/details?id=com.diegoee.rndgame1</string>
+    <string name="tittle_score">RnDGame: Max. Score</string>
 </resources>

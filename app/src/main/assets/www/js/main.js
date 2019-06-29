@@ -68,7 +68,6 @@ requirejs([
     var AppRouter = Backbone.Router.extend({
       routes: {
           init: 'init',
-          score:  'score',
           play: 'play'
       },
       init: function(){
@@ -89,21 +88,14 @@ requirejs([
           var rnd = rndN(border.length,1)-1;
           $('#border').addClass(border[rnd]);
           $.each(
-            ['#btnHelp',
+            ['#btnScore',
              '#btnPlay',
              '#btnSound',
              '#btnOrentation'
           ],function(i,e){
             rnd = rndN(btnColor.length,1)-1;
             $(e).addClass(btnColor[rnd]);
-          });
-
-          $('#btnHelp').on('click',function (){
-            Backbone.history.navigate('score', {trigger:true});
-          });
-          $('#btnPlay').on('click',function(){
-            Backbone.history.navigate('play', {trigger:true});
-          });
+          });          
 
           function soundIcon(s){
             if(!s){
@@ -147,8 +139,19 @@ requirejs([
             data.orientation=!data.orientation;
             saveGetData();
             orienIcon(data.orientation);
+          });          
+          $('#btnScore').on('click',function(){
+            try{
+              saveGetData();
+              android.shareScore();
+            }catch(e){
+              console.error(e);
+            }
+          });          
+          $('#btnPlay').on('click',function(){
+            Backbone.history.navigate('play', {trigger:true});
           });
-
+          
           Snackbar.show({
             text: 'App',
             duration: 1
@@ -156,27 +159,7 @@ requirejs([
                     
         }); 
 
-      },
-      score: function(){
-        try{
-          data = JSON.parse(android.getData());
-        }catch(e){
-          console.error(e);
-        }
-        $('#score').append(data.score); 
-
-        $('#modal').on('hidden.bs.modal',function () {
-          Backbone.history.navigate('init', {trigger:true});
-        });
-        $('#shareBtn').on('click',function(){
-          try{
-            android.shareScore(data.score);
-          }catch(e){
-            console.error(e);
-          }
-        });
-        $('#modal').modal();
-      },
+      }, 
       play: function(){ 
         var self = this;
         game.init(data.sound,function(score){ 
@@ -186,8 +169,7 @@ requirejs([
             var rec = 'New record!!'; 
             
             try{
-              saveGetData();
-              android.backPressed();
+              saveGetData(); 
             }catch(e){
               console.error(e);
               //Backbone.history.navigate('init', {trigger:true});
