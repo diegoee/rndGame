@@ -1,2 +1,6 @@
 Alias: diegoee
 Pass: ++++++
+----
+new user:
+alias: upload
+pass: ******
