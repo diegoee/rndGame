@@ -1,6 +1,5 @@
 package com.diegoee.rndgame1;
 
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,7 +18,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -268,8 +266,8 @@ public class MainActivity extends AppCompatActivity{
           i.putExtra(Intent.EXTRA_TEXT, "My High Score on *RnDGame*: "+score+"\nDownload app:\n"+getString(R.string.url_playstore));
           i.putExtra(Intent.EXTRA_STREAM, imageUri);
           i.setType("image/jpeg");
-          //startActivity(Intent.createChooser( i, "Share Via"));
-          //dialog.dismiss();
+          startActivity(Intent.createChooser( i, "Share Via"));
+          dialog.dismiss();
         }catch (Throwable e) {
           Log.v(TAG,e.getMessage());
           Toast.makeText(getApplicationContext(), "Error, u can not share :(", Toast.LENGTH_SHORT).show();
