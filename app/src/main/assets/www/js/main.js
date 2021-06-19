@@ -158,23 +158,19 @@ requirejs([
           });
                     
         }); 
-
       }, 
       play: function(){ 
         var self = this;
-        game.init(data.sound,function(score){ 
-           
+        game.init(data.sound,function(score){            
           if (score>data.score){
             data.score=score;
-            var rec = 'New record!!'; 
-            
+            var rec = 'New record!!';             
             try{
               saveGetData(); 
             }catch(e){
               console.error(e);
               //Backbone.history.navigate('init', {trigger:true});
-            }
-            
+            }            
             Snackbar.show({
               text: 'Score: '+score+' '+rec,
               duration: 3000,

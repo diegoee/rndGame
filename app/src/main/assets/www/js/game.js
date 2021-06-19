@@ -37,6 +37,9 @@ define([
       {play: function(){}},
       {play: function(){}}
     ],
+    rndN: function(max,min){
+      return Math.floor(Math.random() * max) + min;
+    },
     resize: function (){ 
       this.$canvas.css({
         backgroundColor: 'white',
@@ -105,16 +108,11 @@ define([
         fontFamily: 'Courier New',
         fontSize: 15
       });
-
-      function rndN(max,min){
-        var rnd = Math.floor(Math.random() * max) + min;
-        return rnd;
-      }
-
+ 
       function createCircle(){
         circle.addChild(new Path.Circle({
-          center: new Point(rndN(Math.floor((view.size.width-10)),(10)/2), 5),
-          radius: rndN(8,4),
+          center: new Point(self.rndN(Math.floor((view.size.width-10)),(10)/2), 5),
+          radius: self.rndN(15,10),
           fillColor: 'black',
           strokeColor: 'red',
           strokeWidth: 2
@@ -125,11 +123,11 @@ define([
 
       function createShoot(x){
         self.score--; 
-        scoreView.content='Score: '+self.score;
-        self.sound[3].play();
+        scoreView.content='Score: '+self.score; 
+        self.sound[self.rndN(self.sound.length-1,0)].play();
         shoots.addChild(new Path.Circle({
           center: new Point(x, view.size.height-5),
-          radius: 4,
+          radius: 10,
           fillColor: 'grey'
         })); 
       } 
@@ -162,7 +160,7 @@ define([
         });
 
         if (intersections>0){  
-          self.sound[0].play(); 
+          self.sound[self.rndN(self.sound.length-1,0)].play();
           //gameOver 
           clearInterval(self.interCircle);
           self.$canvas.css({
@@ -178,11 +176,11 @@ define([
 
         //Path move 
         $.each(circle.children,function(){
-          this.position.y+=this.bounds.width/10;
+          this.position.y+=this.bounds.width/20;
         });
 
         $.each(shoots.children,function(){
-          this.position.y-=4;
+          this.position.y-=8;
         });
 
         /*
