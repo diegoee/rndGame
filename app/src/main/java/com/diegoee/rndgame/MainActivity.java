@@ -1,4 +1,4 @@
-package com.diegoee.rndgame;
+package com.diegoee.rndgame1;
 
 
 import androidx.annotation.NonNull;
@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -20,10 +19,10 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -109,6 +108,8 @@ public class MainActivity extends AppCompatActivity{
     score = 0;
     data = getData();
     checkData();
+
+    Log.v(TAG,"App init: "+BuildConfig.APPLICATION_ID);
   }
 
   public void loadAd(){
@@ -239,7 +240,9 @@ public class MainActivity extends AppCompatActivity{
       @Override
       public void onClick(View view) {
         try {
-          String mPath = Environment.getExternalStorageDirectory().toString() + "/"+getResources().getString(R.string.app_name)+".jpg";
+          mView.findViewById(R.id.btnShare).setVisibility(View.GONE);
+          String rootFolder = Environment.getExternalStorageDirectory().toString() + "/Android/data/"+BuildConfig.APPLICATION_ID;
+          String rootImage = rootFolder +"/"+getResources().getString(R.string.app_name)+"HighScore.jpg";
 
           // create bitmap screen capture
           //View v1 = getWindow().getDecorView().getRootView();
@@ -247,7 +250,11 @@ public class MainActivity extends AppCompatActivity{
           Bitmap bitmap = Bitmap.createBitmap(mView.getRootView().getDrawingCache());
           mView.getRootView().setDrawingCacheEnabled(false);
 
-          File imageFile = new File(mPath);
+          File imageFile = new File(rootImage);
+          File folder    = new File(rootFolder);
+          if (!folder.exists()) {
+            folder.mkdirs();
+          }
 
           FileOutputStream outputStream = new FileOutputStream(imageFile);
           int quality = 100;
@@ -255,15 +262,14 @@ public class MainActivity extends AppCompatActivity{
           outputStream.flush();
           outputStream.close();
 
-          Log.v(TAG,"shareScore "+score);
+          Log.v(TAG,"High Score shared: "+score);
           Intent i = new Intent( Intent.ACTION_SEND);
-          Uri imageUri = Uri.parse(mPath);
-          i.putExtra(Intent.EXTRA_TEXT, "My score on RnDGame: "+score+"\n"+getString(R.string.url_playstore));
+          Uri imageUri = Uri.parse(rootImage);
+          i.putExtra(Intent.EXTRA_TEXT, "My High Score on *RnDGame*: "+score+"\nDownload app:\n"+getString(R.string.url_playstore));
           i.putExtra(Intent.EXTRA_STREAM, imageUri);
           i.setType("image/jpeg");
-          startActivity(Intent.createChooser( i, "Share Via"));
-          //Toast.makeText(getApplicationContext(), "Sharing!", Toast.LENGTH_SHORT).show();
-          dialog.dismiss();
+          //startActivity(Intent.createChooser( i, "Share Via"));
+          //dialog.dismiss();
         }catch (Throwable e) {
           Log.v(TAG,e.getMessage());
           Toast.makeText(getApplicationContext(), "Error, u can not share :(", Toast.LENGTH_SHORT).show();
