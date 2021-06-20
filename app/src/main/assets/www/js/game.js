@@ -1,42 +1,40 @@
 /*globals window, define, Howl, clearInterval, setInterval*/
 define([
   'jquery',  
-  'sounds',
   'paper',
-  'howler',
+  'tone', 
   'bootstrap'
   ],
   function(
-    $, 
-    sounds,
-    paper
+    $,  
+    paper,
+    Tone
   ){
   'use strict';
   var game = {
     modalOver: '<div class="modal fade" id="modalOver">  <div class="modal-dialog modal-dialog-centered" role="document">    <div class="modal-content">       <div class="modal-body">      <div class="container">        <div class="row"> <div class="col-12 centerE">Score:</div>        <div class="col-12">            <div id="score" class="text-center p-5 h1"></div>          </div>         <div class="col-12">            <button type="button" class="btn btn-block btn-xs btn-outline-dark" data-dismiss="modal">Back to Menu</button>          </div>        </div>       </div>    </div>  </div></div>',    
     $canvas: $('<canvas id="canvas"></canvas>'),
-    interCircle: undefined,
-    sound: [],
-    soundOn: [
-      new Howl({
-        src: [sounds.noteC]
-      }),
-      new Howl({
-        src: [sounds.noteE]
-      }),
-      new Howl({
-        src: [sounds.noteG]
-      }),
-      new Howl({
-        src: [sounds.noteB]
-      })
+    interCircle: undefined, 
+    soundOnff: false,
+    synth: undefined, // 
+    notes:[ //['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+      'C4',  
+      'D4', 
+      'E4',  
+      'G4',  
+      'A4' 
     ],
-    soundOff: [
-      {play: function(){}},
-      {play: function(){}},
-      {play: function(){}},
-      {play: function(){}}
+    octaves:[
+      '9n',  
+      '8n', 
+      '7n'  
     ],
+    playSound: function(){
+      var self = this; 
+      if(self.soundOnff){  
+        self.synth.triggerAttackRelease(self.notes[self.rndN(self.notes.length-1,0)],self.octaves[self.rndN(self.octaves.length-1,0)]);
+      }
+    }, 
     rndN: function(max,min){
       return Math.floor(Math.random() * max) + min;
     },
@@ -49,11 +47,8 @@ define([
     },
     init: function(soundOnff,fnEnd){
       var self = this;
-      this.sound=this.soundOff;
-      if(soundOnff){
-        this.sound=this.soundOn;
-      }
-      
+      self.synth = new Tone.Synth().toDestination();
+      self.soundOnff=soundOnff;   
       $('#container').html(this.$canvas);
       $('#container').append(this.modalOver);
       this.resize();
@@ -61,12 +56,10 @@ define([
       $(window).on('resize',function(){
         self.resize();
         self.startGame();
-      }); 
-       
+      });  
       paper.install(window);
       paper.setup(this.$canvas.attr('id')); 
-      self.startGame(fnEnd);
-
+      self.startGame(fnEnd); 
     },
     gameOverSnackBar: function(fnEnd){ 
       var self = this;
@@ -124,7 +117,7 @@ define([
       function createShoot(x){
         self.score--; 
         scoreView.content='Score: '+self.score; 
-        self.sound[self.rndN(self.sound.length-1,0)].play();
+        self.playSound(); 
         shoots.addChild(new Path.Circle({
           center: new Point(x, view.size.height-5),
           radius: 10,
@@ -160,7 +153,7 @@ define([
         });
 
         if (intersections>0){  
-          self.sound[self.rndN(self.sound.length-1,0)].play();
+          self.playSound();
           //gameOver 
           clearInterval(self.interCircle);
           self.$canvas.css({
@@ -209,7 +202,7 @@ define([
           for (j=shoots.children.length-1; j >=0; j--){
             auxInter = circle.children[i].getIntersections(shoots.children[j]);
             if(auxInter.length>0){
-              self.sound[2].play();
+              self.playSound();
               shoots.children[j].remove();
               circle.children[i].remove();
               self.score=self.score+5;

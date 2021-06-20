@@ -1,6 +1,6 @@
 /*globals requirejs, window,android,setTimeout */
 requirejs.config({
-  baseUrl: 'js',
+  baseUrl: 'js', 
   paths: {
     jquery: '../node_modules/jquery/dist/jquery.min',
     bootstrap: '../node_modules/bootstrap/dist/js/bootstrap.bundle.min',
@@ -10,6 +10,7 @@ requirejs.config({
     howler: '../node_modules/howler/dist/howler.min',
     hammer: '../node_modules/hammerjs/hammer',
     paper: '../node_modules/paper/dist/paper-full.min',
+    tone: '../node_modules/tone/build/Tone',
   },
   shim: {
     bootstrap : {
@@ -27,6 +28,9 @@ requirejs.config({
     },
     paper : {
       exports: 'paper'
+    },
+    tone : {
+      exports: 'Tone'
     }
   }
 });
