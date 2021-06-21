@@ -1,9 +1,7 @@
 @echo off
 cls
-echo install node_modules ...  
-rmdir /S /Q node_modules    
-del package-lock.json  
-npm install
-pause 
-exit 
+call uninstall.bat 
+echo Installing ...  
+call npm install 
+TIMEOUT /T 15 
 
