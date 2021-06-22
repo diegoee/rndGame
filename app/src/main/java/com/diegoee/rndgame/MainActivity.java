@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity{
   public static final String DATA = "DATA_WEB";
   public static final String DATA_JSON = "DATA_JSON";
 
-  private static final String AD_UNIT_ID = "ca-app-pub-7963003009765790/8418832648"; //MINE
   //private static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"; //TEST GOOGLE
+  private static final String AD_UNIT_ID = "ca-app-pub-7963003009765790/8418832648"; //MINE 00
 
   public static int CODE_PERM = 01;
 
@@ -173,6 +173,7 @@ public class MainActivity extends AppCompatActivity{
       if ((keyCode == KeyEvent.KEYCODE_BACK) && !((Uri.parse(webView.getUrl())).getFragment().equals("init"))) {
         //Log.v(TAG,"onKeyDown init");
         webView.loadUrl("file:///android_asset/www/index.html");
+        loadAd();
         return true;
       }
     }
